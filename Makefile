@@ -13,17 +13,23 @@ FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop
 
 all: language
 
-language: main.o ReadFile.o SizeFile.o
-	g++ main.o ReadFile.o SizeFile.o ${FLAGS} -o language
+language: main.o ReadFile.o SizeFile.o CtorDtor.o Parser.o
+	g++ main.o ReadFile.o SizeFile.o CtorDtor.o Parser.o ${FLAGS} -o language
 
 main.o: main.cpp
 	g++ -c main.cpp
 
 ReadFile.o: ./lib/src/ReadFile.cpp
-	g++ -I./lib/include -c ./lib/src/ReadFile.cpp
+	g++ -I./lib/include -I./include -c ./lib/src/ReadFile.cpp
 
 SizeFile.o: ./lib/src/SizeFile.cpp
-	g++ -I./lib/include -c ./lib/src/SizeFile.cpp
+	g++ -I./lib/include -I./include -c ./lib/src/SizeFile.cpp
+
+CtorDtor.o: ./src/CtorDtor.cpp
+	g++ -I./include -I./lib/include -c ./src/CtorDtor.cpp
+
+Parser.o: ./src/Parser.cpp
+	g++ -I./include -I./lib/include -c ./src/Parser.cpp
 
 clean:
 	rm -rf *.o language
