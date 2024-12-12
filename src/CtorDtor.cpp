@@ -44,22 +44,11 @@ void TreeDtor (Tree_t* tree)
 {
     assert (tree);
 
-    NodeDtor (tree->expression);
-    // for (int y = SIZE_ARRAY - 1; y != 0; y--)
-    // {
-    //     if ((int) tree->array[y]->value != '$')
-    //         free (tree->array[y]);
-    //     else
-    //     {
-    //         free (tree->array[y]);
-    //         break;
-    //     }
-    // } 
-    // for (int i = 0; i < SIZE_ARRAY; i++)
-    // {
-    //     if (tree->array[i])
-    //         free (tree->array[i]);
-    // }
+    for (int i = 0; i < SIZE_ARRAY; i++)
+    {
+        if (tree->array[i])
+            free (tree->array[i]);
+    }
 
     free (tree->array);
     NodeDtor (tree->expression_diff);

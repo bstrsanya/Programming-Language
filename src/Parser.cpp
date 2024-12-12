@@ -13,16 +13,15 @@ void ReadDataBase (Tree_t* tree)
 
     Node_t** array = CreateTokens (s);
 
+    for (int i = 0; i < 10; i++)
+        printf ("[%d]: type [%d], value [%g]\n", i, array[i]->type, array[i]->value);
+
     int pointer = 0;
+    // GetFunc (&pointer, array);
     Node_t* value = GetG (&pointer, array);
     
     tree->expression = value;
 
-    for (int i = 0; i < SIZE_ARRAY; i++)
-    {
-        if ((int) array[i]->type == 0 || (int) array[i]->value == ')' || (int) array[i]->value == '(' || (int) array[i]->value == '$')
-            free (array[i]);
-    }
     tree->array = array;
     free (s);
 }
@@ -38,9 +37,13 @@ Node_t** CreateTokens (char* s)
 
     int y = 0;
 
-    while (s[t] != '$' && s[t] != 0)
+    while (s[t] != 0)
     {
-        if ((('0' <= s[t]) && (s[t] <= '9')) || (s[t] == '-' && (y == 0 || (int)array[y - 1]->value == F_OPEN)))
+        while (s[t] == ' ' || s[t] == '\n')
+        {
+            t++;
+        }
+        if ((('0' <= s[t]) && (s[t] <= '9')) || (s[t] == '-' && (y == 0 || (int) array[y - 1]->value == F_OPEN)))
         {            
             double d = 0;
             int n = 0;
@@ -65,23 +68,21 @@ Node_t** CreateTokens (char* s)
             y++;
             t += n;
         }
-        else if (s[t] == '(' || s[t] == ')')
+        else if (s[t] == '(' || 
+                 s[t] == ')' || 
+                 s[t] == '{' ||
+                 s[t] == '}' ||
+                 s[t] == '+' || 
+                 s[t] == '-' || 
+                 s[t] == '*' || 
+                 s[t] == '/' || 
+                 s[t] == '^' || 
+                 s[t] == '='  )
         {
             array[y]->type = OP;
             array[y]->value = s[t];
             t++;
             y++;
-        }
-        else if (s[t] == '+' || s[t] == '-' || s[t] == '*' || s[t] == '/' || s[t] == '^')
-        {
-            array[y]->type = OP;
-            array[y]->value = s[t];
-            t++;
-            y++;
-        }
-        else if (s[t] == ' ')
-        {
-            t++;
         }
         else
         {
@@ -106,122 +107,39 @@ void FindCommand (char* com, type_com* com_type, int* com_value)
 
 Node_t* GetG (int* pointer, Node_t** array)
 {
-    Node_t* value = GetE (pointer, array);
+    Node_t* value = GetFunc (pointer, array);
     if ((int) array[*pointer]->value != '$')
     {
+        printf ("[%g]\n", array[*pointer]->value);
         assert (0);
     }
     (*pointer)++;
     return value;
 }
 
-Node_t* GetN (int* pointer, Node_t** array)
+Node_t* GetFunc (int* pointer, Node_t** array)
 {
-    (*pointer)++;
-    return array[(*pointer)-1];
-}
-
-Node_t* GetE (int* pointer, Node_t** array)
-{
-    Node_t* value = GetT (pointer, array);
-
-    while (array[*pointer]->type == OP && ((int) array[*pointer]->value == F_ADD || (int) array[*pointer]->value == F_SUB))
-    {
-        int num = *pointer;
-        (*pointer)++;
-        Node_t* value2 = GetT (pointer, array);
-        array[num]->left = value;
-        array[num]->right = value2;
-        value = array[num];
-    }
-    return value;
-}
-
-Node_t* GetT (int* pointer, Node_t** array)
-{
-    Node_t* value = GetS (pointer, array);
-
-    while (array[*pointer]->type == OP && ((int) array[*pointer]->value == F_MUL || (int) array[*pointer]->value == F_DIV))
-    {
-        int num = *pointer;
-        (*pointer)++;
-        Node_t* value2 = GetS (pointer, array);
-        array[num]->left = value;
-        array[num]->right = value2;
-        value = array[num];
-    }
-
-    return value;
-}
-
-Node_t* GetS (int* pointer, Node_t** array)
-{
-    Node_t* value = GetP (pointer, array);
-
-    if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_DEG)
-    {
-        int num = *pointer;
-        (*pointer)++;
-        Node_t* value2 = GetP (pointer, array);
-        array[num]->left = value;
-        array[num]->right = value2;
-        value = array[num];
-    }
-
-    return value;
-}
-
-Node_t* GetP (int* pointer, Node_t** array)
-{
-    if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_OPEN)
+    Node_t* value = array[*pointer];
+    if ((int) array[*pointer]->value == F_FUNC)
     {
         (*pointer)++;
-        Node_t* value = GetE (pointer, array);
-        if ((int) array[*pointer]->value != F_CLOSE)
+        if ((int) array[*pointer]->value == F_CURLY_BRACE_OPEN)
+        {
+            (*pointer)++;
+            value->right = GetEqu (pointer, array);
+        }
+        if ((int) array[*pointer]->value != F_CURLY_BRACE_CLOSE)
+        {
+            printf ("need [}]\n");
             assert (0);
-        (*pointer)++;
-        return value;
-    }
-    else if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_COS)
-    {
-        int num = *pointer;
-        (*pointer)++;
-        Node_t* value = GetP (pointer, array);
-        array[num]->right = value;
-        return array[num];
-    }
-    else if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_SIN)
-    {
-        int num = *pointer;
-        (*pointer)++;
-        Node_t* value = GetP (pointer, array);
-        array[num]->right = value;
-        return array[num];
-    }
-    else if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_LN)
-    {
-        int num = *pointer;
-        (*pointer)++;
-        Node_t* value = GetP (pointer, array);
-        array[num]->right = value;
-        return array[num];
-    }
-    else if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_TAN)
-    {
-        int num = *pointer;
-        (*pointer)++;
-        Node_t* value = GetP (pointer, array);
-        array[num]->right = value;
-        return array[num];
-    }
-    else if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_CTG)
-    {
-        int num = *pointer;
-        (*pointer)++;
-        Node_t* value = GetP (pointer, array);
-        array[num]->right = value;
-        return array[num];
+        }
+        else
+            (*pointer)++;
     }
     else
-        return GetN (pointer, array);
+    {
+        printf ("Программа должна начинаться с функции\n");
+        assert (0);
+    }
+    return value;
 }

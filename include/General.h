@@ -6,7 +6,7 @@ constexpr Command_t array_command[] = {
     {"sin", F_SIN  , OP},
     {"tg" , F_TAN  , OP},
     {"ctg", F_CTG  , OP},
-    {"ln" , F_LN  , OP},
+    {"ln" , F_LN   , OP},
     {"+"  , F_ADD  , OP},
     {"-"  , F_SUB  , OP},
     {"*"  , F_MUL  , OP},
@@ -15,7 +15,12 @@ constexpr Command_t array_command[] = {
     {"x"  , F_VAR  , VAR},
     {"("  , F_OPEN , OP},
     {")"  , F_CLOSE, OP},
-    {"e"  , F_E    , MATH_CONST}
+    {"e"  , F_E    , MATH_CONST},
+    {"="  , F_EQU  , OP},
+    {"if" , F_IF   , OP},
+    {"main", F_FUNC, FUNC},
+    {"{"  , F_CURLY_BRACE_OPEN, OP},
+    {"}"  , F_CURLY_BRACE_CLOSE, OP}
 };
 
 #endif
