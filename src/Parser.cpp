@@ -135,27 +135,10 @@ Node_t* GetG (int* pointer, Node_t** array)
 Node_t* GetFunc (int* pointer, Node_t** array)
 {
     Node_t* value = array[*pointer];
-    Node_t* value_copy = value;
     if ((int) array[*pointer]->value == F_FUNC)
     {
         (*pointer)++;
-        if ((int) array[*pointer]->value == F_CURLY_BRACE_OPEN)
-        {
-            (*pointer)++;
-            while ((int) array[*pointer]->value != F_CURLY_BRACE_CLOSE && (int) array[*pointer]->value != '$')
-            {
-                Node_t* value_block = NodeCtor (BLOCK, 0, NULL, NULL);
-                value_block->left = GetIf (pointer, array);
-                value_copy->right = value_block;
-                value_copy = value_block;
-            }
-        }
-        if ((int) array[*pointer]->value != F_CURLY_BRACE_CLOSE)
-        {
-            printf ("need [}]\n");
-            assert (0);
-        }
-        (*pointer)++;
+        GetBlockCode (pointer, array, value, GetIf);
     }
     else
     {
@@ -176,16 +159,40 @@ Node_t* GetIf (int* pointer, Node_t** array)
         Node_t* value1 = GetEqu (pointer, array);
         (*pointer)++;                                 // конец условия для if
 
-        (*pointer)++;                                 // начало подифного выражения
-        Node_t* value2 = GetEqu (pointer, array);
-        (*pointer)++;                                 // конец подифного выражения
+        // (*pointer)++;                              // начало подифного выражения
+        GetBlockCode (pointer, array, main_node, GetIf);
+        // (*pointer)++;                              // конец подифного выражения
 
         main_node->left  = value1;
-        main_node->right = value2;
         return main_node;
     }
     else
     {
         return GetEqu (pointer, array);
     }     
+}
+
+void GetBlockCode (int* pointer, Node_t** array, Node_t* value, Node_t* (*func) (int*, Node_t**))
+{    
+    assert (value);
+    if ((int) array[*pointer]->value == F_CURLY_BRACE_OPEN)
+    {
+        (*pointer)++;
+
+        while ((int) array[*pointer]->value != F_CURLY_BRACE_CLOSE && 
+                   (int) array[*pointer]->value != '$')
+        {
+        Node_t* value_block = NodeCtor (BLOCK, 0, NULL, NULL);
+        value_block->left = func (pointer, array);
+        value->right = value_block;
+        value = value_block;
+        }
+    }
+    if ((int) array[*pointer]->value != F_CURLY_BRACE_CLOSE)
+    {
+        printf ("need [}]\n");
+        assert (0);
+    }
+
+    (*pointer)++; 
 }

@@ -79,6 +79,7 @@ void FindCommand (char* com, type_com* com_type, int* com_value);
 Node_t* GetEqu (int* pointer, Node_t** array);
 Node_t* GetFunc (int* pointer, Node_t** array);
 Node_t* GetIf (int* pointer, Node_t** array);
+void GetBlockCode (int* pointer, Node_t** array, Node_t* value, Node_t* (*func) (int*, Node_t**));
 
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right);
 void NodeDtor (Node_t* node);
