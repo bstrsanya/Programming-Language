@@ -9,7 +9,6 @@ const int LEN_STR    = 10;
 const char FILE_EXPRESSION[] = "test_example.txt";
 const char FILE_LATEX[]      = "INPUT";
 const double SMALL    = 10e-8;
-const int NUM_COMMAND = 17;
 const int NUM_PHRASES = 5;
 
 enum type_com
@@ -18,7 +17,8 @@ enum type_com
     VAR = 2,
     OP  = 3,
     MATH_CONST = 4,
-    FUNC = 5
+    FUNC = 5,
+    BLOCK = 6
 };
 
 struct Node_t 
@@ -50,7 +50,6 @@ enum command
     F_MUL   = 42,
     F_DIV   = 47,
     F_DEG   = 94,
-    F_VAR   = 120,
     F_OPEN  = 40,
     F_CLOSE = 41,
     F_E     = 101,
@@ -79,6 +78,7 @@ Node_t* GetS (int* pointer, Node_t** array);
 void FindCommand (char* com, type_com* com_type, int* com_value);
 Node_t* GetEqu (int* pointer, Node_t** array);
 Node_t* GetFunc (int* pointer, Node_t** array);
+Node_t* GetIf (int* pointer, Node_t** array);
 
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right);
 void NodeDtor (Node_t* node);

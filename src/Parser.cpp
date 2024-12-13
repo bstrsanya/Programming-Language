@@ -11,13 +11,14 @@ void ReadDataBase (Tree_t* tree)
     size_t size = 0;
     char* s = ReadFile (tree->input, &size);
 
+
     Node_t** array = CreateTokens (s);
 
-    for (int i = 0; i < 10; i++)
-        printf ("[%d]: type [%d], value [%g]\n", i, array[i]->type, array[i]->value);
+    // for (int i = 0; i < 10; i++)
+    //     printf ("[%d]: type [%d], value [%g]\n", i, array[i]->type, array[i]->value);
 
     int pointer = 0;
-    // GetFunc (&pointer, array);
+
     Node_t* value = GetG (&pointer, array);
     
     tree->expression = value;
@@ -40,9 +41,8 @@ Node_t** CreateTokens (char* s)
     while (s[t] != 0)
     {
         while (s[t] == ' ' || s[t] == '\n')
-        {
             t++;
-        }
+
         if ((('0' <= s[t]) && (s[t] <= '9')) || (s[t] == '-' && (y == 0 || (int) array[y - 1]->value == F_OPEN)))
         {            
             double d = 0;
@@ -52,13 +52,16 @@ Node_t** CreateTokens (char* s)
             array[y]->type = NUM;
             array[y]->value = d;
             y++;
+
+            while (s[t] == ' ' || s[t] == '\n')
+            t++;
         }
         else if (('a' <= s[t] && s[t] <= 'z') || ('A' <= s[t] && s[t] <= 'Z'))
         {
             char com[LEN_STR] = "";
             int n = 0;
             sscanf (s + t, "%[a-zA-Z]%n", com, &n);
-            
+
             type_com com_type;
             int com_value = 0;
             FindCommand (com, &com_type, &com_value);
@@ -67,6 +70,9 @@ Node_t** CreateTokens (char* s)
             array[y]->value = com_value;
             y++;
             t += n;
+
+            while (s[t] == ' ' || s[t] == '\n')
+            t++;
         }
         else if (s[t] == '(' || 
                  s[t] == ')' || 
@@ -83,7 +89,11 @@ Node_t** CreateTokens (char* s)
             array[y]->value = s[t];
             t++;
             y++;
+
+            while (s[t] == ' ' || s[t] == '\n')
+            t++;
         }
+        
         else
         {
             printf ("ER - [%d]\n", s[t-1]);
@@ -94,7 +104,7 @@ Node_t** CreateTokens (char* s)
 }
 
 void FindCommand (char* com, type_com* com_type, int* com_value)
-{
+{    
     for (int i = 0; i < NUM_COMMAND; i++)
     {
         if (!strcmp (array_command[i].name, com))
@@ -102,6 +112,11 @@ void FindCommand (char* com, type_com* com_type, int* com_value)
             *com_type = array_command[i].t_com;
             *com_value = array_command[i].n_com;
         }
+    }
+    if (!(*com_value))
+    {
+        *com_type = VAR;
+        *com_value = com[0];
     }
 }
 
@@ -120,21 +135,27 @@ Node_t* GetG (int* pointer, Node_t** array)
 Node_t* GetFunc (int* pointer, Node_t** array)
 {
     Node_t* value = array[*pointer];
+    Node_t* value_copy = value;
     if ((int) array[*pointer]->value == F_FUNC)
     {
         (*pointer)++;
         if ((int) array[*pointer]->value == F_CURLY_BRACE_OPEN)
         {
             (*pointer)++;
-            value->right = GetEqu (pointer, array);
+            while ((int) array[*pointer]->value != F_CURLY_BRACE_CLOSE && (int) array[*pointer]->value != '$')
+            {
+                Node_t* value_block = NodeCtor (BLOCK, 0, NULL, NULL);
+                value_block->left = GetIf (pointer, array);
+                value_copy->right = value_block;
+                value_copy = value_block;
+            }
         }
         if ((int) array[*pointer]->value != F_CURLY_BRACE_CLOSE)
         {
             printf ("need [}]\n");
             assert (0);
         }
-        else
-            (*pointer)++;
+        (*pointer)++;
     }
     else
     {
@@ -142,4 +163,29 @@ Node_t* GetFunc (int* pointer, Node_t** array)
         assert (0);
     }
     return value;
+}
+
+Node_t* GetIf (int* pointer, Node_t** array)
+{
+    if ((int) array[*pointer]->value == F_IF)
+    {
+        Node_t* main_node = array[*pointer];
+        (*pointer)++;
+
+        (*pointer)++;                                 // начало условия для if
+        Node_t* value1 = GetEqu (pointer, array);
+        (*pointer)++;                                 // конец условия для if
+
+        (*pointer)++;                                 // начало подифного выражения
+        Node_t* value2 = GetEqu (pointer, array);
+        (*pointer)++;                                 // конец подифного выражения
+
+        main_node->left  = value1;
+        main_node->right = value2;
+        return main_node;
+    }
+    else
+    {
+        return GetEqu (pointer, array);
+    }     
 }

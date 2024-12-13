@@ -41,9 +41,14 @@ void CreateDotUSER (Node_t* node, FILE* file_dot)
                 fprintf (file_dot, "node%p [shape=circle; style = filled; fillcolor = \"#ffe4c4\"; label = \"%s\"];\n", node, array_command[i].name);
     }
 
+    else if (node->type == BLOCK)
+    {
+        fprintf (file_dot, "node%p [shape=circle; style = filled; fillcolor = \"orange\"; label = \"%s\"];\n", node, "block");
+    }
+
     else if (node->type == FUNC)
     {
-        fprintf (file_dot, "node%p [shape=circle; style = filled; fillcolor = \"blue\"; label = \"%s\"];\n", node, "main");
+        fprintf (file_dot, "node%p [shape=circle; style = filled; fillcolor = \"\"; label = \"%s\"];\n", node, "main");
     }
 
     else if (node->type == VAR)

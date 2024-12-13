@@ -44,6 +44,14 @@ void TreeDtor (Tree_t* tree)
 {
     assert (tree);
 
+    Node_t* block_node = tree->array[0];
+    while (block_node->right)
+    {
+        Node_t* copy_block_node = block_node->right->right;
+        free(block_node->right);
+        block_node->right = copy_block_node;
+    }
+
     for (int i = 0; i < SIZE_ARRAY; i++)
     {
         if (tree->array[i])

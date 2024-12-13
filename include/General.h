@@ -12,7 +12,6 @@ constexpr Command_t array_command[] = {
     {"*"  , F_MUL  , OP},
     {"/"  , F_DIV  , OP},
     {"^"  , F_DEG  , OP},
-    {"x"  , F_VAR  , VAR},
     {"("  , F_OPEN , OP},
     {")"  , F_CLOSE, OP},
     {"e"  , F_E    , MATH_CONST},
@@ -22,5 +21,7 @@ constexpr Command_t array_command[] = {
     {"{"  , F_CURLY_BRACE_OPEN, OP},
     {"}"  , F_CURLY_BRACE_CLOSE, OP}
 };
+
+const int NUM_COMMAND = sizeof (array_command) / sizeof (array_command[0]);
 
 #endif
