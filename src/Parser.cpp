@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <math.h>
 
 #include "Parser.h"
 #include "General.h"
@@ -11,11 +12,17 @@ void ReadDataBase (Tree_t* tree)
     size_t size = 0;
     char* s = ReadFile (tree->input, &size);
 
-
     Node_t** array = CreateTokens (s);
 
-    // for (int i = 0; i < 10; i++)
-    //     printf ("[%d]: type [%d], value [%g]\n", i, array[i]->type, array[i]->value);
+    // for (int i = 0; i < 20; i++)
+    // {
+    //     if (array[i]->type == NUM)
+    //         printf ("[%d]: type [%d], value [%g]\n", i, array[i]->type, array[i]->value.number);
+    //     else if (array[i]->type == VAR)
+    //         printf ("[%d]: type [%d], value [%d]\n", i, array[i]->type, array[i]->value.var);
+    //     else
+    //         printf ("[%d]: type [%d], value [%d]\n", i, array[i]->type, array[i]->value.com);
+    // }
 
     int pointer = 0;
 
@@ -34,6 +41,12 @@ Node_t** CreateTokens (char* s)
     for (int i = 0; i < SIZE_ARRAY; i++)
     {
         array[i] = NodeCtor (0, 0, NULL, NULL);
+        array[i]->left = NULL;
+        array[i]->right = NULL;
+        array[i]->type = INVALID_TYPE;
+        array[i]->value.com = F_INVALID;
+        array[i]->value.number = NAN;
+        array[i]->value.var = -1;
     }
 
     int y = 0;
@@ -43,14 +56,14 @@ Node_t** CreateTokens (char* s)
         while (s[t] == ' ' || s[t] == '\n')
             t++;
 
-        if ((('0' <= s[t]) && (s[t] <= '9')) || (s[t] == '-' && (y == 0 || (int) array[y - 1]->value == F_OPEN)))
+        if ((('0' <= s[t]) && (s[t] <= '9')) || (s[t] == '-' && (y == 0 || (int) array[y - 1]->value.com == F_OPEN)))
         {            
             double d = 0;
             int n = 0;
             sscanf (s + t, "%lf%n", &d, &n);
             t += n;
             array[y]->type = NUM;
-            array[y]->value = d;
+            array[y]->value.number = d;
             y++;
 
             while (s[t] == ' ' || s[t] == '\n')
@@ -67,7 +80,12 @@ Node_t** CreateTokens (char* s)
             FindCommand (com, &com_type, &com_value);
 
             array[y]->type = (type_com) com_type;
-            array[y]->value = com_value;
+
+            if (com_type == VAR)
+                array[y]->value.var = com_value;
+            else
+                array[y]->value.com = (command) com_value;
+
             y++;
             t += n;
 
@@ -83,15 +101,32 @@ Node_t** CreateTokens (char* s)
                  s[t] == '*' || 
                  s[t] == '/' || 
                  s[t] == '^' || 
-                 s[t] == '='  )
+                 s[t] == ';'  )
         {
             array[y]->type = OP;
-            array[y]->value = s[t];
+            array[y]->value.com = (command) s[t];
             t++;
             y++;
 
             while (s[t] == ' ' || s[t] == '\n')
             t++;
+        }
+
+        else if (s[t] == '=')
+        {
+            t++;
+            array[y]->type = OP;
+            if (s[t] == '=')
+            {
+                array[y]->value.com = F_EQUAL;
+                t++;
+            }
+            else
+                array[y]->value.com = F_ASSIGNMENT;
+
+            y++;
+            while (s[t] == ' ' || s[t] == '\n')
+                t++;
         }
         
         else
@@ -99,7 +134,7 @@ Node_t** CreateTokens (char* s)
             printf ("ER - [%d]\n", s[t-1]);
         }
     }
-    array[y]->value = '$';
+    array[y]->value.var = '$';
     return array;
 }
 
@@ -123,9 +158,9 @@ void FindCommand (char* com, type_com* com_type, int* com_value)
 Node_t* GetG (int* pointer, Node_t** array)
 {
     Node_t* value = GetFunc (pointer, array);
-    if ((int) array[*pointer]->value != '$')
+    if ((int) array[*pointer]->value.var != '$')
     {
-        printf ("[%g]\n", array[*pointer]->value);
+        printf ("[%d]\n", *pointer);
         assert (0);
     }
     (*pointer)++;
@@ -135,10 +170,12 @@ Node_t* GetG (int* pointer, Node_t** array)
 Node_t* GetFunc (int* pointer, Node_t** array)
 {
     Node_t* value = array[*pointer];
-    if ((int) array[*pointer]->value == F_FUNC)
+    if (array[*pointer]->value.com == F_FUNC)
     {
         (*pointer)++;
-        GetBlockCode (pointer, array, value, GetIf);
+        (*pointer)++;
+        GetStop (pointer, array, value);
+        (*pointer)++;
     }
     else
     {
@@ -148,20 +185,96 @@ Node_t* GetFunc (int* pointer, Node_t** array)
     return value;
 }
 
+void GetStop (int* pointer, Node_t** array, Node_t* main_value)
+{
+    Node_t* value = GetIf (pointer, array);
+
+    Node_t* block = NodeCtor (BLOCK, 0, value, NULL);
+
+    main_value->right = block;
+    main_value = block;
+
+    while (array[*pointer]->value.com == F_INTERRUPT || 
+           array[*pointer]->value.com != F_CURLY_BRACE_CLOSE)
+    {
+        if (array[*pointer]->value.com == F_INTERRUPT) (*pointer)++;
+        if (array[*pointer]->value.com == F_CURLY_BRACE_CLOSE) return ;
+
+        Node_t* value2 = GetIf (pointer, array);
+        Node_t* block2 = NodeCtor (BLOCK, 0, value2, NULL);
+        main_value->right = block2;
+        main_value = block2;
+    }
+}
+
 Node_t* GetIf (int* pointer, Node_t** array)
 {
-    if ((int) array[*pointer]->value == F_IF)
+    if (array[*pointer]->value.com == F_IF)
     {
         Node_t* main_node = array[*pointer];
         (*pointer)++;
 
+        if (array[*pointer]->value.com != F_OPEN)
+        {
+            printf ("вместо [%d] нужно [(]\n", array[*pointer]->value.com);
+            assert (0);
+        }
+
         (*pointer)++;                                 // начало условия для if
         Node_t* value1 = GetEqu (pointer, array);
+
+        if (array[*pointer]->value.com != F_CLOSE)
+        {
+            printf ("вместо [%d] нужно [)]\n", array[*pointer]->value.com);
+            assert (0);
+        }
+
         (*pointer)++;                                 // конец условия для if
 
-        // (*pointer)++;                              // начало подифного выражения
-        GetBlockCode (pointer, array, main_node, GetIf);
-        // (*pointer)++;                              // конец подифного выражения
+        if (array[*pointer]->value.com != F_CURLY_BRACE_OPEN)
+        {
+            printf ("вместо [%d] нужно [{]\n", array[*pointer]->value.com);
+            assert (0);
+        }
+
+        (*pointer)++;                              // начало подифного выражения
+        GetStop (pointer, array, main_node);
+
+        if (array[*pointer]->value.com != F_CURLY_BRACE_CLOSE)
+        {
+            printf ("вместо [%d] нужно [}]\n", array[*pointer]->value.com);
+            assert (0);
+        }
+        (*pointer)++;                              // конец подифного выражения
+
+        int n_else = *pointer;
+        if (array[*pointer]->value.com == F_ELSE)
+        {
+            (*pointer)++;
+            if (array[*pointer]->value.com != F_CURLY_BRACE_OPEN)
+            {
+                printf ("вместо [%d] нужно [{]\n", array[*pointer]->value.com);
+                assert (0);
+            }
+            (*pointer)++;
+
+            GetStop (pointer, array, array[n_else]);
+
+            if (array[*pointer]->value.com != F_CURLY_BRACE_CLOSE)
+            {
+                printf ("вместо [%d] нужно [}]\n", array[*pointer]->value.com);
+                assert (0);
+            }
+            (*pointer)++;
+        }
+
+        if (array[n_else]->right)
+        {
+            main_node->left = value1;
+            Node_t* copy_node = main_node->right;
+            main_node->right = array[n_else];
+            array[n_else]->left = copy_node;
+        }
 
         main_node->left  = value1;
         return main_node;
@@ -170,29 +283,4 @@ Node_t* GetIf (int* pointer, Node_t** array)
     {
         return GetEqu (pointer, array);
     }     
-}
-
-void GetBlockCode (int* pointer, Node_t** array, Node_t* value, Node_t* (*func) (int*, Node_t**))
-{    
-    assert (value);
-    if ((int) array[*pointer]->value == F_CURLY_BRACE_OPEN)
-    {
-        (*pointer)++;
-
-        while ((int) array[*pointer]->value != F_CURLY_BRACE_CLOSE && 
-                   (int) array[*pointer]->value != '$')
-        {
-        Node_t* value_block = NodeCtor (BLOCK, 0, NULL, NULL);
-        value_block->left = func (pointer, array);
-        value->right = value_block;
-        value = value_block;
-        }
-    }
-    if ((int) array[*pointer]->value != F_CURLY_BRACE_CLOSE)
-    {
-        printf ("need [}]\n");
-        assert (0);
-    }
-
-    (*pointer)++; 
 }

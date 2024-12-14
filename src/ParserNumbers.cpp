@@ -16,7 +16,7 @@ Node_t* GetE (int* pointer, Node_t** array)
 {
     Node_t* value = GetT (pointer, array);
 
-    while (array[*pointer]->type == OP && ((int) array[*pointer]->value == F_ADD || (int) array[*pointer]->value == F_SUB))
+    while (array[*pointer]->type == OP && (array[*pointer]->value.com == F_ADD || array[*pointer]->value.com == F_SUB))
     {
         int num = *pointer;
         (*pointer)++;
@@ -32,7 +32,7 @@ Node_t* GetT (int* pointer, Node_t** array)
 {
     Node_t* value = GetS (pointer, array);
 
-    while (array[*pointer]->type == OP && ((int) array[*pointer]->value == F_MUL || (int) array[*pointer]->value == F_DIV))
+    while (array[*pointer]->type == OP && (array[*pointer]->value.com == F_MUL || array[*pointer]->value.com == F_DIV))
     {
         int num = *pointer;
         (*pointer)++;
@@ -50,7 +50,7 @@ Node_t* GetS (int* pointer, Node_t** array)
 {
     Node_t* value = GetP (pointer, array);
 
-    if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_DEG)
+    if (array[*pointer]->type == OP && array[*pointer]->value.com == F_DEG)
     {
         int num = *pointer;
         (*pointer)++;
@@ -67,7 +67,8 @@ Node_t* GetEqu (int* pointer, Node_t** array)
 {
     Node_t* value = GetE (pointer, array);
 
-    if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_EQU)
+    if (array[*pointer]->type == OP && (array[*pointer]->value.com == F_ASSIGNMENT ||
+                                        array[*pointer]->value.com == F_EQUAL))
     {
         int num = *pointer;
         (*pointer)++;
@@ -83,19 +84,19 @@ Node_t* GetEqu (int* pointer, Node_t** array)
 
 Node_t* GetP (int* pointer, Node_t** array)
 {
-    if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_OPEN)
+    if (array[*pointer]->type == OP && array[*pointer]->value.com == F_OPEN)
     {
         (*pointer)++;
         Node_t* value = GetE (pointer, array);
-        if ((int) array[*pointer]->value != F_CLOSE)
+        if (array[*pointer]->value.com != F_CLOSE)
         {
-            printf ("вместо [%g] должна быть [)]\n", array[*pointer]->value);
+            printf ("вместо [%d] должна быть [)]\n", array[*pointer]->value.com);
             assert (0);
         }
         (*pointer)++;
         return value;
     }
-    else if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_COS)
+    else if (array[*pointer]->type == OP && array[*pointer]->value.com == F_COS)
     {
         int num = *pointer;
         (*pointer)++;
@@ -103,7 +104,7 @@ Node_t* GetP (int* pointer, Node_t** array)
         array[num]->right = value;
         return array[num];
     }
-    else if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_SIN)
+    else if (array[*pointer]->type == OP && array[*pointer]->value.com == F_SIN)
     {
         int num = *pointer;
         (*pointer)++;
@@ -111,7 +112,7 @@ Node_t* GetP (int* pointer, Node_t** array)
         array[num]->right = value;
         return array[num];
     }
-    else if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_LN)
+    else if (array[*pointer]->type == OP && array[*pointer]->value.com == F_LN)
     {
         int num = *pointer;
         (*pointer)++;
@@ -119,7 +120,7 @@ Node_t* GetP (int* pointer, Node_t** array)
         array[num]->right = value;
         return array[num];
     }
-    else if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_TAN)
+    else if (array[*pointer]->type == OP && array[*pointer]->value.com == F_TAN)
     {
         int num = *pointer;
         (*pointer)++;
@@ -127,7 +128,7 @@ Node_t* GetP (int* pointer, Node_t** array)
         array[num]->right = value;
         return array[num];
     }
-    else if (array[*pointer]->type == OP && (int) array[*pointer]->value == F_CTG)
+    else if (array[*pointer]->type == OP && array[*pointer]->value.com == F_CTG)
     {
         int num = *pointer;
         (*pointer)++;

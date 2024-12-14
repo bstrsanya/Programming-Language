@@ -14,29 +14,29 @@ FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop
 
 all: language
 
-language: main.o ReadFile.o SizeFile.o CtorDtor.o Parser.o GraphDump.o ParserNumbers.o 
-	g++ main.o ReadFile.o SizeFile.o CtorDtor.o Parser.o GraphDump.o ParserNumbers.o ${FLAGS} -o language
+language: ./obj/main.o ./obj/ReadFile.o ./obj/SizeFile.o ./obj/CtorDtor.o ./obj/Parser.o ./obj/GraphDump.o ./obj/ParserNumbers.o 
+	g++ ./obj/main.o ./obj/ReadFile.o ./obj/SizeFile.o ./obj/CtorDtor.o ./obj/Parser.o ./obj/GraphDump.o ./obj/ParserNumbers.o ${FLAGS} -o language
 
-main.o: main.cpp
-	g++ -I./lib/include -I./include ${FLAGS} -c main.cpp
+./obj/main.o: main.cpp
+	g++ -I./lib/include -I./include ${FLAGS} -c main.cpp -o ./obj/main.o
 
-ReadFile.o: ./lib/src/ReadFile.cpp
-	g++ -I./lib/include -I./include ${FLAGS} -c ./lib/src/ReadFile.cpp
+./obj/ReadFile.o: ./lib/src/ReadFile.cpp
+	g++ -I./lib/include -I./include ${FLAGS} -c ./lib/src/ReadFile.cpp -o ./obj/ReadFile.o
 
-SizeFile.o: ./lib/src/SizeFile.cpp
-	g++ -I./lib/include -I./include ${FLAGS} -c ./lib/src/SizeFile.cpp
+./obj/SizeFile.o: ./lib/src/SizeFile.cpp
+	g++ -I./lib/include -I./include ${FLAGS} -c ./lib/src/SizeFile.cpp -o ./obj/SizeFile.o
 
-CtorDtor.o: ./src/CtorDtor.cpp
-	g++ -I./include -I./lib/include ${FLAGS} -c ./src/CtorDtor.cpp
+./obj/CtorDtor.o: ./src/CtorDtor.cpp
+	g++ -I./include -I./lib/include ${FLAGS} -c ./src/CtorDtor.cpp -o ./obj/CtorDtor.o
 
-Parser.o: ./src/Parser.cpp
-	g++ -I./include -I./lib/include ${FLAGS} -c ./src/Parser.cpp
+./obj/Parser.o: ./src/Parser.cpp
+	g++ -I./include -I./lib/include ${FLAGS} -c ./src/Parser.cpp -o ./obj/Parser.o
 
-GraphDump.o: ./src/GraphDump.cpp
-	g++ -I./include -I./lib/include ${FLAGS} -c ./src/GraphDump.cpp
+./obj/GraphDump.o: ./src/GraphDump.cpp
+	g++ -I./include -I./lib/include ${FLAGS} -c ./src/GraphDump.cpp -o ./obj/GraphDump.o
 
-ParserNumbers.o: ./src/ParserNumbers.cpp
-	g++ -I./include -I./lib/include ${FLAGS} -c ./src/ParserNumbers.cpp
+./obj/ParserNumbers.o: ./src/ParserNumbers.cpp
+	g++ -I./include -I./lib/include ${FLAGS} -c ./src/ParserNumbers.cpp -o ./obj/ParserNumbers.o
 
 clean:
-	rm -rf *.o language
+	rm -rf ./obj/*.o language

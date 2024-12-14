@@ -5,39 +5,39 @@
 #include "Parser.h"
 #include "General.h"
 
-void CreateDot (Node_t* node, FILE* file_dot)
-{
-    if (!node) return;
+// void CreateDot (Node_t* node, FILE* file_dot)
+// {
+//     if (!node) return;
 
-    if (node->type == NUM)
-        fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = \"#a2ff00\"; color = \"#800000\"; label = \"{type = NUM | value = %g | address = %p | { <f0> left = %p | <f1> right = %p}}\"];\n", node, node->value, node, node->left, node->right);
+//     if (node->type == NUM)
+//         fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = \"#a2ff00\"; color = \"#800000\"; label = \"{type = NUM | value = %g | address = %p | { <f0> left = %p | <f1> right = %p}}\"];\n", node, node->value, node, node->left, node->right);
 
-    else if (node->type == OP)
-        fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = \"#ffe4c4\"; color = \"#800000\"; label = \"{type = OP | value = %c | address = %p | { <f0> left = %p | <f1> right = %p}}\"];\n", node, (char) node->value, node, node->left, node->right);
+//     else if (node->type == OP)
+//         fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = \"#ffe4c4\"; color = \"#800000\"; label = \"{type = OP | value = %c | address = %p | { <f0> left = %p | <f1> right = %p}}\"];\n", node, (char) node->value, node, node->left, node->right);
 
-    if (node->left) 
-    {
-        fprintf (file_dot, "node%p: <f0> -> node%p [color = red, style = bold, arrowhead = vee];\n", node, node->left);
-        CreateDot (node->left, file_dot);
-    }
-    if (node->right) 
-    {
-        fprintf (file_dot, "node%p: <f1> -> node%p [color = red, style = bold, arrowhead = vee];\n", node, node->right);
-        CreateDot (node->right, file_dot);
-    }
-}
+//     if (node->left) 
+//     {
+//         fprintf (file_dot, "node%p: <f0> -> node%p [color = red, style = bold, arrowhead = vee];\n", node, node->left);
+//         CreateDot (node->left, file_dot);
+//     }
+//     if (node->right) 
+//     {
+//         fprintf (file_dot, "node%p: <f1> -> node%p [color = red, style = bold, arrowhead = vee];\n", node, node->right);
+//         CreateDot (node->right, file_dot);
+//     }
+// }
 
 void CreateDotUSER (Node_t* node, FILE* file_dot)
 {
     if (!node) return;
 
     if (node->type == NUM)
-        fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = \"#a2ff00\"; label = \"%.3g\"];\n", node, node->value);
+        fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = \"#a2ff00\"; label = \"%.3g\"];\n", node, node->value.number);
 
     else if (node->type == OP)
     {
         for (int i = 0; i < NUM_COMMAND; i++)
-            if ((int) node->value == array_command[i].n_com)
+            if (node->value.com == array_command[i].n_com)
                 fprintf (file_dot, "node%p [shape=circle; style = filled; fillcolor = \"#ffe4c4\"; label = \"%s\"];\n", node, array_command[i].name);
     }
 
@@ -52,10 +52,7 @@ void CreateDotUSER (Node_t* node, FILE* file_dot)
     }
 
     else if (node->type == VAR)
-        fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = pink; label = \"%c\"];\n", node, (char) node->value);
-
-    else if (node->type == MATH_CONST)
-        fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = \"#0000ff8f\"; label = \"%c\"];\n", node, (char) node->value);
+        fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = pink; label = \"%c\"];\n", node, (char) node->value.var);
 
     if (node->left) 
     {

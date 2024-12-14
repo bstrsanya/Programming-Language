@@ -14,12 +14,14 @@ constexpr Command_t array_command[] = {
     {"^"  , F_DEG  , OP},
     {"("  , F_OPEN , OP},
     {")"  , F_CLOSE, OP},
-    {"e"  , F_E    , MATH_CONST},
-    {"="  , F_EQU  , OP},
+    {"="  , F_ASSIGNMENT  , OP},
     {"if" , F_IF   , OP},
     {"main", F_FUNC, FUNC},
     {"{"  , F_CURLY_BRACE_OPEN, OP},
-    {"}"  , F_CURLY_BRACE_CLOSE, OP}
+    {"}"  , F_CURLY_BRACE_CLOSE, OP},
+    {";"  , F_INTERRUPT, OP},
+    {"==" , F_EQUAL , OP},
+    {"else", F_ELSE, OP}
 };
 
 const int NUM_COMMAND = sizeof (array_command) / sizeof (array_command[0]);

@@ -10,7 +10,13 @@ Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right)
     assert (new_node);
 
     new_node->type = (type_com) type;
-    new_node->value = value;
+
+    if (type == NUM)
+        new_node->value.number = value;
+    else if (type == VAR)
+        new_node->value.var = (int) value;
+    else
+        new_node->value.com = (command) value;
 
     new_node->left = left;
     new_node->right = right;

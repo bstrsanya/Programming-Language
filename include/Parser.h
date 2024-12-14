@@ -16,26 +16,9 @@ enum type_com
     NUM = 1,
     VAR = 2,
     OP  = 3,
-    MATH_CONST = 4,
     FUNC = 5,
-    BLOCK = 6
-};
-
-struct Node_t 
-{
-    type_com type;
-    double value;
-    Node_t* left;
-    Node_t* right;
-};
-
-struct Tree_t
-{
-    Node_t* expression;
-    Node_t* expression_diff;
-    FILE* output;
-    FILE* input;
-    Node_t** array;
+    BLOCK = 6,
+    INVALID_TYPE = -1
 };
 
 enum command
@@ -53,12 +36,41 @@ enum command
     F_OPEN  = 40,
     F_CLOSE = 41,
     F_E     = 101,
-    F_EQU   = 61,
+    F_ASSIGNMENT   = 61,
     F_IF    = 6,
     F_FUNC  = 7,
     F_CURLY_BRACE_OPEN  = 123,
-    F_CURLY_BRACE_CLOSE = 125
+    F_CURLY_BRACE_CLOSE = 125,
+    F_INTERRUPT = 59,
+    F_EQUAL = 8,
+    F_ELSE  = 9,
+    F_INVALID = -1
 };
+
+struct Node_t 
+{
+    type_com type;
+
+    struct {
+        double number;
+        command com;
+        int var;
+    } value;
+    
+    Node_t* left;
+    Node_t* right;
+};
+
+struct Tree_t
+{
+    Node_t* expression;
+    Node_t* expression_diff;
+    FILE* output;
+    FILE* input;
+    Node_t** array;
+};
+
+
 
 struct Command_t
 {
@@ -79,14 +91,14 @@ void FindCommand (char* com, type_com* com_type, int* com_value);
 Node_t* GetEqu (int* pointer, Node_t** array);
 Node_t* GetFunc (int* pointer, Node_t** array);
 Node_t* GetIf (int* pointer, Node_t** array);
-void GetBlockCode (int* pointer, Node_t** array, Node_t* value, Node_t* (*func) (int*, Node_t**));
+void GetStop (int* pointer, Node_t** array, Node_t* main_value);
 
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right);
 void NodeDtor (Node_t* node);
 void TreeCtor (Tree_t* tree, const char* name_file);
 void TreeDtor (Tree_t* tree);
 
-void CreateDot (Node_t* node, FILE* file_dot);
+// void CreateDot (Node_t* node, FILE* file_dot);
 void CreateDotUSER (Node_t* node, FILE* file_dot);
 void PrintDot (Node_t* node, const char* file_input);
 
