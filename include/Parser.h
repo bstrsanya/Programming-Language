@@ -7,9 +7,8 @@
 const int SIZE_ARRAY = 100;
 const int LEN_STR    = 10;
 const char FILE_EXPRESSION[] = "test_example.txt";
-const char FILE_LATEX[]      = "INPUT";
+const char FILE_LATEX[]      = "INPUT.txt";
 const double SMALL    = 10e-8;
-const int NUM_PHRASES = 5;
 
 enum type_com
 {
@@ -44,7 +43,8 @@ enum command
     F_INTERRUPT = 59,
     F_EQUAL = 8,
     F_ELSE  = 9,
-    F_INVALID = -1
+    F_INVALID = -1,
+    F_WHILE = 10
 };
 
 struct Node_t 
@@ -68,9 +68,9 @@ struct Tree_t
     FILE* output;
     FILE* input;
     Node_t** array;
+    char* read_data;
+    char** table_var;
 };
-
-
 
 struct Command_t
 {
@@ -80,18 +80,19 @@ struct Command_t
 };
 
 void ReadDataBase (Tree_t* tree);
-Node_t** CreateTokens (char* str);
+Node_t** CreateTokens (Tree_t* tree);
 Node_t* GetG (int* pointer, Node_t** array);
 Node_t* GetN (int* pointer, Node_t** array);
 Node_t* GetE (int* pointer, Node_t** array);
 Node_t* GetT (int* pointer, Node_t** array);
 Node_t* GetP (int* pointer, Node_t** array);
 Node_t* GetS (int* pointer, Node_t** array);
-void FindCommand (char* com, type_com* com_type, int* com_value);
+void FindCommand (char* com, type_com* com_type, int* com_value, Tree_t* tree);
 Node_t* GetEqu (int* pointer, Node_t** array);
 Node_t* GetFunc (int* pointer, Node_t** array);
 Node_t* GetIf (int* pointer, Node_t** array);
 void GetStop (int* pointer, Node_t** array, Node_t* main_value);
+Node_t* GetWhile (int* pointer, Node_t** array);
 
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right);
 void NodeDtor (Node_t* node);
@@ -99,7 +100,7 @@ void TreeCtor (Tree_t* tree, const char* name_file);
 void TreeDtor (Tree_t* tree);
 
 // void CreateDot (Node_t* node, FILE* file_dot);
-void CreateDotUSER (Node_t* node, FILE* file_dot);
-void PrintDot (Node_t* node, const char* file_input);
+void CreateDotUSER (Node_t* node, FILE* file_dot, Tree_t* tree);
+void PrintDot (Node_t* node, const char* file_input, Tree_t* tree);
 
 #endif

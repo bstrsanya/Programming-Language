@@ -10,9 +10,9 @@
 void ReadDataBase (Tree_t* tree)
 {
     size_t size = 0;
-    char* s = ReadFile (tree->input, &size);
+    tree->read_data = ReadFile (tree->input, &size);
 
-    Node_t** array = CreateTokens (s);
+    Node_t** array = CreateTokens (tree);
 
     // for (int i = 0; i < 20; i++)
     // {
@@ -31,11 +31,11 @@ void ReadDataBase (Tree_t* tree)
     tree->expression = value;
 
     tree->array = array;
-    free (s);
 }
 
-Node_t** CreateTokens (char* s)
+Node_t** CreateTokens (Tree_t* tree)
 {
+    char* s = tree->read_data;
     int t = 0;
     Node_t** array = (Node_t**) calloc (SIZE_ARRAY, sizeof (Node_t*));
     for (int i = 0; i < SIZE_ARRAY; i++)
@@ -69,15 +69,21 @@ Node_t** CreateTokens (char* s)
             while (s[t] == ' ' || s[t] == '\n')
             t++;
         }
+        
         else if (('a' <= s[t] && s[t] <= 'z') || ('A' <= s[t] && s[t] <= 'Z'))
         {
-            char com[LEN_STR] = "";
             int n = 0;
-            sscanf (s + t, "%[a-zA-Z]%n", com, &n);
+            sscanf (s + t, "%*[a-zA-Z]%n", &n);
 
+            if (s[t+n] != ' ' && s[t+n] != '\n')
+            {
+                printf ("Please observe the aesthetics of the code, namely, put spaces\n");
+                assert (0);
+            }
+            s[t+n] = '\0';
             type_com com_type;
             int com_value = 0;
-            FindCommand (com, &com_type, &com_value);
+            FindCommand (s+t, &com_type, &com_value, tree);
 
             array[y]->type = (type_com) com_type;
 
@@ -87,7 +93,7 @@ Node_t** CreateTokens (char* s)
                 array[y]->value.com = (command) com_value;
 
             y++;
-            t += n;
+            t += n + 1;
 
             while (s[t] == ' ' || s[t] == '\n')
             t++;
@@ -138,7 +144,7 @@ Node_t** CreateTokens (char* s)
     return array;
 }
 
-void FindCommand (char* com, type_com* com_type, int* com_value)
+void FindCommand (char* com, type_com* com_type, int* com_value, Tree_t* tree)
 {    
     for (int i = 0; i < NUM_COMMAND; i++)
     {
@@ -151,7 +157,21 @@ void FindCommand (char* com, type_com* com_type, int* com_value)
     if (!(*com_value))
     {
         *com_type = VAR;
-        *com_value = com[0];
+        for (int i = 0; i < 10; i++)
+        {
+            if (!tree->table_var[i])
+            {
+                *com_value = i;
+                tree->table_var[i] = com;
+                break;
+            }
+            else if (!(strcmp (tree->table_var[i], com)))
+            {
+                *com_value = i;
+                break;
+            }
+            
+        }
     }
 }
 
@@ -187,23 +207,23 @@ Node_t* GetFunc (int* pointer, Node_t** array)
 
 void GetStop (int* pointer, Node_t** array, Node_t* main_value)
 {
-    Node_t* value = GetIf (pointer, array);
-
-    Node_t* block = NodeCtor (BLOCK, 0, value, NULL);
-
-    main_value->right = block;
-    main_value = block;
-
-    while (array[*pointer]->value.com == F_INTERRUPT || 
-           array[*pointer]->value.com != F_CURLY_BRACE_CLOSE)
+    while (array[*pointer]->value.com != F_CURLY_BRACE_CLOSE)
     {
-        if (array[*pointer]->value.com == F_INTERRUPT) (*pointer)++;
-        if (array[*pointer]->value.com == F_CURLY_BRACE_CLOSE) return ;
+        Node_t* value = GetIf (pointer, array);
 
-        Node_t* value2 = GetIf (pointer, array);
-        Node_t* block2 = NodeCtor (BLOCK, 0, value2, NULL);
-        main_value->right = block2;
-        main_value = block2;
+        if (array[(*pointer) - 1]->value.com != F_CURLY_BRACE_CLOSE &&
+            array[(*pointer)]->value.com != F_INTERRUPT )
+        {
+            printf ("need [;]\n");
+            assert(0);
+        }
+        if (array[*pointer]->value.com == F_INTERRUPT) (*pointer)++;
+
+        Node_t* block = NodeCtor (BLOCK, 0, value, NULL);
+
+        main_value->right = block;
+        main_value = block;
+
     }
 }
 
@@ -281,6 +301,55 @@ Node_t* GetIf (int* pointer, Node_t** array)
     }
     else
     {
-        return GetEqu (pointer, array);
+        return GetWhile (pointer, array);
     }     
+}
+
+Node_t* GetWhile (int* pointer, Node_t** array)
+{
+    if (array[*pointer]->value.com == F_WHILE)
+    {
+        Node_t* main_node = array[*pointer];
+        (*pointer)++;
+
+        if (array[*pointer]->value.com != F_OPEN)
+        {
+            printf ("вместо [%d] нужно [(]\n", array[*pointer]->value.com);
+            assert (0);
+        }
+
+        (*pointer)++;                                 // начало условия для if
+        Node_t* value1 = GetEqu (pointer, array);
+
+        if (array[*pointer]->value.com != F_CLOSE)
+        {
+            printf ("вместо [%d] нужно [)]\n", array[*pointer]->value.com);
+            assert (0);
+        }
+
+        (*pointer)++;                                 // конец условия для if
+
+        if (array[*pointer]->value.com != F_CURLY_BRACE_OPEN)
+        {
+            printf ("вместо [%d] нужно [{]\n", array[*pointer]->value.com);
+            assert (0);
+        }
+
+        (*pointer)++;                              // начало подифного выражения
+        GetStop (pointer, array, main_node);
+
+        if (array[*pointer]->value.com != F_CURLY_BRACE_CLOSE)
+        {
+            printf ("вместо [%d] нужно [}]\n", array[*pointer]->value.com);
+            assert (0);
+        }
+        (*pointer)++;                              // конец подифного выражения
+
+        main_node->left  = value1;
+        return main_node;
+    }
+    else
+    {
+        return GetEqu (pointer, array);
+    }
 }

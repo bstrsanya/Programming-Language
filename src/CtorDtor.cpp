@@ -31,7 +31,7 @@ void NodeDtor (Node_t* node)
     if (node->left) NodeDtor (node->left);
     if (node->right) NodeDtor (node->right);
 
-    free (node);
+    if (node->type == BLOCK) free (node);
 }
 
 void TreeCtor (Tree_t* tree, const char* name_file)
@@ -40,6 +40,14 @@ void TreeCtor (Tree_t* tree, const char* name_file)
     assert (name_file);
 
     tree->input = fopen (name_file, "rb");
+
+    char** table = (char**) calloc (10, sizeof (char*));
+    assert (table);
+    for (int i = 0; i < 10; i++)
+        table[i] = NULL;
+
+    tree->table_var = table;
+
     ReadDataBase (tree);
     fclose (tree->input);
 
@@ -50,13 +58,7 @@ void TreeDtor (Tree_t* tree)
 {
     assert (tree);
 
-    Node_t* block_node = tree->array[0];
-    while (block_node->right)
-    {
-        Node_t* copy_block_node = block_node->right->right;
-        free(block_node->right);
-        block_node->right = copy_block_node;
-    }
+    NodeDtor (tree->array[0]);
 
     for (int i = 0; i < SIZE_ARRAY; i++)
     {
@@ -66,6 +68,9 @@ void TreeDtor (Tree_t* tree)
 
     free (tree->array);
     NodeDtor (tree->expression_diff);
+
+    free (tree->table_var);
+    free (tree->read_data);
 
     if (tree->output)
         fclose (tree->output);

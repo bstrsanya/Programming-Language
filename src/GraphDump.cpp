@@ -27,7 +27,7 @@
 //     }
 // }
 
-void CreateDotUSER (Node_t* node, FILE* file_dot)
+void CreateDotUSER (Node_t* node, FILE* file_dot, Tree_t* tree)
 {
     if (!node) return;
 
@@ -52,27 +52,29 @@ void CreateDotUSER (Node_t* node, FILE* file_dot)
     }
 
     else if (node->type == VAR)
-        fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = pink; label = \"%c\"];\n", node, (char) node->value.var);
+    {
+        fprintf (file_dot, "node%p [shape=record; style = filled; fillcolor = pink; label = \"%s\"];\n", node, tree->table_var[node->value.var]);
+    }
 
     if (node->left) 
     {
         fprintf (file_dot, "node%p -> node%p [color = red, style = bold, arrowhead = vee];\n", node, node->left);
-        CreateDotUSER (node->left, file_dot);
+        CreateDotUSER (node->left, file_dot, tree);
     }
     if (node->right) 
     {
         fprintf (file_dot, "node%p -> node%p [color = red, style = bold, arrowhead = vee];\n", node, node->right);
-        CreateDotUSER (node->right, file_dot);
+        CreateDotUSER (node->right, file_dot, tree);
     }
 }
 
-void PrintDot (Node_t* node, const char* file_input)
+void PrintDot (Node_t* node, const char* file_input, Tree_t* tree)
 {
     FILE* file_dot = fopen ("./aaa.dot", "w");
     assert (file_dot != NULL);
     // fprintf (file_dot, "digraph{\nsplines=\"ortho\";\n");
     fprintf (file_dot, "digraph{\n");
-    CreateDotUSER (node, file_dot);
+    CreateDotUSER (node, file_dot, tree);
     fprintf (file_dot, "}");
     fclose (file_dot);
 
