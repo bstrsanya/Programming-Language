@@ -20,9 +20,16 @@ constexpr Command_t array_command[] = {
     {"{"  , F_CURLY_BRACE_OPEN, OP},
     {"}"  , F_CURLY_BRACE_CLOSE, OP},
     {";"  , F_INTERRUPT, OP},
-    {"==" , F_EQUAL , OP},
+    {"==" , F_JE , OP},
     {"else", F_ELSE, OP},
-    {"while", F_WHILE, OP}
+    {"while", F_WHILE, OP},
+    {"<"    , F_JB,   OP},
+    {"<="   , F_JBE,   OP},
+    {">"    , F_JA,   OP},
+    {">="    , F_JAE,   OP},
+    {"!="    , F_JNE,   OP},
+    {"int"  , F_INT, OP},
+    {"double", F_DOUBLE, OP}
 };
 
 const int NUM_COMMAND = sizeof (array_command) / sizeof (array_command[0]);

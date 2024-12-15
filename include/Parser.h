@@ -41,10 +41,17 @@ enum ListCommand_t
     F_CURLY_BRACE_OPEN  = 123,
     F_CURLY_BRACE_CLOSE = 125,
     F_INTERRUPT = 59,
-    F_EQUAL = 8,
     F_ELSE  = 9,
     F_INVALID = -1,
-    F_WHILE = 10
+    F_WHILE = 10,
+    F_JB  = 11, // <
+    F_JA  = 12, // >
+    F_JBE = 13, // <=
+    F_JAE = 14, // >=
+    F_JE  = 15, // = 
+    F_JNE = 16, //
+    F_INT = 17,
+    F_DOUBLE = 18 
 };
 
 struct Node_t 
@@ -93,6 +100,7 @@ Node_t* GetFunc (int* pointer, Node_t** array);
 Node_t* GetIf (int* pointer, Node_t** array);
 void GetStop (int* pointer, Node_t** array, Node_t* main_value);
 Node_t* GetWhile (int* pointer, Node_t** array);
+Node_t* GetV (int* pointer, Node_t** array);
 
 Node_t** CreateArrayTokens ();
 

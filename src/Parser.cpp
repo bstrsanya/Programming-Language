@@ -59,7 +59,6 @@ void Tokenization (Tree_t* tree)
     char* buffer = tree->read_data;
     int position = 0;    
 
-
     while (buffer[position] != 0)
     {
         while (buffer[position] == ' ' || buffer[position] == '\n')
@@ -124,11 +123,56 @@ void Tokenization (Tree_t* tree)
             array[y]->type = OP;
             if (buffer[position] == '=')
             {
-                array[y]->value.com = F_EQUAL;
+                array[y]->value.com = F_JE;
                 position++;
             }
             else
                 array[y]->value.com = F_ASSIGNMENT;
+
+            y++;
+        }
+
+        else if (buffer[position] == '<')
+        {
+            position++;
+            array[y]->type = OP;
+            if (buffer[position] == '=')
+            {
+                array[y]->value.com = F_JBE;
+                position++;
+            }
+            else
+                array[y]->value.com = F_JB;
+
+            y++;
+        }
+
+        else if (buffer[position] == '>')
+        {
+            position++;
+            array[y]->type = OP;
+            if (buffer[position] == '=')
+            {
+                array[y]->value.com = F_JAE;
+                position++;
+            }
+            else
+                array[y]->value.com = F_JA;
+
+            y++;
+        }
+
+        else if (buffer[position] == '!')
+        {
+            position++;
+            array[y]->type = OP;
+            if (buffer[position] == '=')
+            {
+                array[y]->value.com = F_JNE;
+                position++;
+            }
+            else
+                printf ("AAAAAAAAA\n");
 
             y++;
         }
@@ -167,7 +211,6 @@ void FindCommand (char* com, TypeCommand_t* com_type, int* com_value, Tree_t* tr
                 *com_value = i;
                 break;
             }
-            
         }
     }
 }
@@ -347,6 +390,6 @@ Node_t* GetWhile (int* pointer, Node_t** array)
     }
     else
     {
-        return GetEqu (pointer, array);
+        return GetV (pointer, array);
     }
 }

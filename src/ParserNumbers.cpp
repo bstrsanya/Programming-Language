@@ -8,6 +8,12 @@
 
 Node_t* GetN (int* pointer, Node_t** array)
 {
+    if (array[*pointer]->type != NUM && array[*pointer]->type != VAR)
+    {
+        printf ("need num or var\n");
+        assert (0);
+    }
+
     (*pointer)++;
     return array[(*pointer)-1];
 }
@@ -68,7 +74,12 @@ Node_t* GetEqu (int* pointer, Node_t** array)
     Node_t* value = GetE (pointer, array);
 
     if (array[*pointer]->type == OP && (array[*pointer]->value.com == F_ASSIGNMENT ||
-                                        array[*pointer]->value.com == F_EQUAL))
+                                        array[*pointer]->value.com == F_JE         ||
+                                        array[*pointer]->value.com == F_JB         ||
+                                        array[*pointer]->value.com == F_JA         ||
+                                        array[*pointer]->value.com == F_JBE        ||
+                                        array[*pointer]->value.com == F_JAE        ||
+                                        array[*pointer]->value.com == F_JNE        ))
     {
         int num = *pointer;
         (*pointer)++;
@@ -81,6 +92,20 @@ Node_t* GetEqu (int* pointer, Node_t** array)
     return value;
 }
 
+Node_t* GetV (int* pointer, Node_t** array)
+{
+    if (array[*pointer]->type == OP && (array[*pointer]->value.com == F_INT ||
+                                        array[*pointer]->value.com == F_DOUBLE))
+    {
+        int num = *pointer;
+        (*pointer)++;
+        Node_t* number = GetEqu (pointer, array);
+        array[num]->right = number;
+        return array[num];
+    }
+
+    return GetEqu (pointer, array);
+}
 
 Node_t* GetP (int* pointer, Node_t** array)
 {
