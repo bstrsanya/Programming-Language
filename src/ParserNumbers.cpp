@@ -84,11 +84,11 @@ Node_t* GetEqu (int* pointer, Node_t** array)
 
 Node_t* GetP (int* pointer, Node_t** array)
 {
-    if (array[*pointer]->type == OP && array[*pointer]->value.com == F_OPEN)
+    if (array[*pointer]->type == OP && array[*pointer]->value.com == F_BRACE_OPEN)
     {
         (*pointer)++;
         Node_t* value = GetE (pointer, array);
-        if (array[*pointer]->value.com != F_CLOSE)
+        if (array[*pointer]->value.com != F_BRACE_CLOSE)
         {
             printf ("вместо [%d] должна быть [)]\n", array[*pointer]->value.com);
             assert (0);

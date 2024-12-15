@@ -5,12 +5,12 @@
 #include "SizeFile.h"
 
 const int SIZE_ARRAY = 100;
-const int LEN_STR    = 10;
+const int SIZE_TABLE_VAR = 10;
 const char FILE_EXPRESSION[] = "test_example.txt";
 const char FILE_LATEX[]      = "INPUT.txt";
 const double SMALL    = 10e-8;
 
-enum type_com
+enum TypeCommand_t
 {
     NUM = 1,
     VAR = 2,
@@ -20,7 +20,7 @@ enum type_com
     INVALID_TYPE = -1
 };
 
-enum command
+enum ListCommand_t
 {
     F_COS   = 1,
     F_SIN   = 2,
@@ -32,8 +32,8 @@ enum command
     F_MUL   = 42,
     F_DIV   = 47,
     F_DEG   = 94,
-    F_OPEN  = 40,
-    F_CLOSE = 41,
+    F_BRACE_OPEN  = 40,
+    F_BRACE_CLOSE = 41,
     F_E     = 101,
     F_ASSIGNMENT   = 61,
     F_IF    = 6,
@@ -49,11 +49,11 @@ enum command
 
 struct Node_t 
 {
-    type_com type;
+    TypeCommand_t type;
 
     struct {
         double number;
-        command com;
+        ListCommand_t com;
         int var;
     } value;
     
@@ -75,24 +75,26 @@ struct Tree_t
 struct Command_t
 {
     const char* name;
-    command n_com;
-    type_com t_com;
+    ListCommand_t n_com;
+    TypeCommand_t t_com;
 };
 
 void ReadDataBase (Tree_t* tree);
-Node_t** CreateTokens (Tree_t* tree);
+void Tokenization (Tree_t* tree);
 Node_t* GetG (int* pointer, Node_t** array);
 Node_t* GetN (int* pointer, Node_t** array);
 Node_t* GetE (int* pointer, Node_t** array);
 Node_t* GetT (int* pointer, Node_t** array);
 Node_t* GetP (int* pointer, Node_t** array);
 Node_t* GetS (int* pointer, Node_t** array);
-void FindCommand (char* com, type_com* com_type, int* com_value, Tree_t* tree);
+void FindCommand (char* com, TypeCommand_t* com_type, int* com_value, Tree_t* tree);
 Node_t* GetEqu (int* pointer, Node_t** array);
 Node_t* GetFunc (int* pointer, Node_t** array);
 Node_t* GetIf (int* pointer, Node_t** array);
 void GetStop (int* pointer, Node_t** array, Node_t* main_value);
 Node_t* GetWhile (int* pointer, Node_t** array);
+
+Node_t** CreateArrayTokens ();
 
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right);
 void NodeDtor (Node_t* node);

@@ -9,14 +9,14 @@ Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right)
     Node_t* new_node = (Node_t*) calloc (1, sizeof (Node_t));
     assert (new_node);
 
-    new_node->type = (type_com) type;
+    new_node->type = (TypeCommand_t) type;
 
     if (type == NUM)
         new_node->value.number = value;
     else if (type == VAR)
         new_node->value.var = (int) value;
     else
-        new_node->value.com = (command) value;
+        new_node->value.com = (ListCommand_t) value;
 
     new_node->left = left;
     new_node->right = right;
@@ -41,9 +41,9 @@ void TreeCtor (Tree_t* tree, const char* name_file)
 
     tree->input = fopen (name_file, "rb");
 
-    char** table = (char**) calloc (10, sizeof (char*));
+    char** table = (char**) calloc (SIZE_TABLE_VAR, sizeof (char*));
     assert (table);
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < SIZE_TABLE_VAR; i++)
         table[i] = NULL;
 
     tree->table_var = table;
