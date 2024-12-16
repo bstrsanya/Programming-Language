@@ -43,7 +43,7 @@ void CreateDotUSER (Node_t* node, FILE* file_dot, Tree_t* tree)
 
     else if (node->type == BLOCK)
     {
-        fprintf (file_dot, "node%p [shape=circle; style = filled; fillcolor = \"orange\"; label = \"%s\"];\n", node, "block");
+        fprintf (file_dot, "node%p [shape=circle; style = filled; fillcolor = \"orange\"; label = \"%s\"];\n", node, ";");
     }
 
     else if (node->type == FUNC)

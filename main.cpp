@@ -9,6 +9,9 @@ int main ()
     TreeCtor (&tree, FILE_EXPRESSION);
 
     PrintDot (tree.expression, "qwe.png", &tree);
+
+    CreateTreeTxt (&tree);
+
     TreeDtor (&tree);
     return 0;
 }

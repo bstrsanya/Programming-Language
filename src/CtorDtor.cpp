@@ -75,3 +75,75 @@ void TreeDtor (Tree_t* tree)
     if (tree->output)
         fclose (tree->output);
 }
+
+void CreateTreeTxt (Tree_t* tree)
+{
+    PrintTxt (tree->expression, tree);
+
+    fprintf (tree->output, "\n\n");
+    int i = 0;
+    while (tree->table_var[i])
+    {
+        fprintf (tree->output, "%d%10s\n", i, tree->table_var[i]);
+        i++;
+    }
+}
+
+void PrintTxt (Node_t* node, Tree_t* tree)
+{
+    switch ((int) node->type)
+    {
+        case FUNC:
+        {
+            fprintf (tree->output, "(5 %d ", node->value.var);
+            if (node->left) PrintTxt (node->left, tree);
+            else fprintf (tree->output, "_ ");
+
+            if (node->right) PrintTxt (node->right, tree);
+            else fprintf (tree->output, "_ ");
+
+            fprintf (tree->output, ")");
+            break;
+        }
+        case BLOCK:
+        {
+            fprintf (tree->output, "(3 %d ", F_INTERRUPT);
+            if (node->left) PrintTxt (node->left, tree);
+            else fprintf (tree->output, "_ ");
+
+            if (node->right) PrintTxt (node->right, tree);
+            else fprintf (tree->output, "_ ");
+
+            fprintf (tree->output, ")");
+            break;
+        }
+        case NUM:
+        {
+            fprintf (tree->output, "(1 %g _ _ )", node->value.number);
+            break;
+        }
+        case VAR:
+        {
+            fprintf (tree->output, "(2 %d _ _ )", node->value.var);
+            break;
+        }
+        case OP:
+        {
+            if (node->value.com != F_PRINT)
+            {
+                fprintf (tree->output, "(3 %d ", node->value.com);
+                PrintTxt (node->left, tree);
+                PrintTxt (node->right, tree);
+                fprintf (tree->output, ")");
+            }
+            else 
+            {
+                fprintf (tree->output, "(3 %d _ ", node->value.com);
+                PrintTxt (node->right, tree);
+                fprintf (tree->output, ")");
+            }
+            break;
+        }
+        default: break;
+    }
+}

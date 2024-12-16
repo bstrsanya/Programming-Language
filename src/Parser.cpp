@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 
 #include "Parser.h"
 #include "General.h"
@@ -16,20 +17,24 @@ void ReadDataBase (Tree_t* tree)
     tree->array = CreateArrayTokens ();
     Tokenization (tree);
 
+
+    // for (int i = 0; i < 20; i++)
+    // {
+    //     if (tree->array[i]->type == NUM)
+    //         printf ("[%d]: type [%d], value [%g]\n", i, tree->array[i]->type, tree->array[i]->value.number);
+    //     else if (tree->array[i]->type == VAR)
+    //         printf ("[%d]: type [%d], value [%d]\n", i, tree->array[i]->type, tree->array[i]->value.var);
+    //     else
+    //         printf ("[%d]: type [%d], value [%d]\n", i, tree->array[i]->type, tree->array[i]->value.com);
+    // }
+
+
     // recursive descent
     int pointer = 0;
     tree->expression = GetG (&pointer, tree->array);
 }
 
-    // for (int i = 0; i < 20; i++)
-    // {
-    //     if (array[i]->type == NUM)
-    //         printf ("[%d]: type [%d], value [%g]\n", i, array[i]->type, array[i]->value.number);
-    //     else if (array[i]->type == VAR)
-    //         printf ("[%d]: type [%d], value [%d]\n", i, array[i]->type, array[i]->value.var);
-    //     else
-    //         printf ("[%d]: type [%d], value [%d]\n", i, array[i]->type, array[i]->value.com);
-    // }
+
 
 
 Node_t** CreateArrayTokens ()
@@ -74,15 +79,22 @@ void Tokenization (Tree_t* tree)
             array[y]->value.number = d;
             y++;
         }
-        
-        else if (('a' <= buffer[position] && buffer[position] <= 'z') || ('A' <= buffer[position] && buffer[position] <= 'Z'))
-        {
+        else {
             int n = 0;
-            sscanf (buffer + position, "%*[a-zA-Z]%n", &n);
+            if (isalpha(buffer[position]))
+                sscanf (buffer + position, "%*[a-zA-Z]%n", &n);
+            else 
+                sscanf (buffer + position, "%*[(){}+-/*^;!=<>]%n", &n);
 
-            if (buffer[position+n] != ' ' && buffer[position+n] != '\n')
+            if (!n)
             {
-                printf ("Please observe the aesthetics of the code, namely, put spaces\n");
+                printf ("ERROR, unread symbol [%c]\n", buffer[position]);
+                assert (0);
+            }
+        
+            if (buffer[position+n] != ' ' && buffer[position+n] != '\n' && buffer[position+n] != '\t')
+            {
+                printf ("Please observe the aesthetics of the code, namely, put spaces after [%d]\n", position);
                 assert (0);
             }
             buffer[position+n] = '\0';
@@ -98,89 +110,8 @@ void Tokenization (Tree_t* tree)
                 array[y]->value.com = (ListCommand_t) com_value;
 
             y++;
-            position += n + 1;
-        }
-        else if (buffer[position] == '(' || 
-                 buffer[position] == ')' || 
-                 buffer[position] == '{' ||
-                 buffer[position] == '}' ||
-                 buffer[position] == '+' || 
-                 buffer[position] == '-' || 
-                 buffer[position] == '*' || 
-                 buffer[position] == '/' || 
-                 buffer[position] == '^' || 
-                 buffer[position] == ';'  )
-        {
-            array[y]->type = OP;
-            array[y]->value.com = (ListCommand_t) buffer[position];
-            position++;
-            y++;
-        }
-
-        else if (buffer[position] == '=')
-        {
-            position++;
-            array[y]->type = OP;
-            if (buffer[position] == '=')
-            {
-                array[y]->value.com = F_JE;
-                position++;
+                position += n + 1;
             }
-            else
-                array[y]->value.com = F_ASSIGNMENT;
-
-            y++;
-        }
-
-        else if (buffer[position] == '<')
-        {
-            position++;
-            array[y]->type = OP;
-            if (buffer[position] == '=')
-            {
-                array[y]->value.com = F_JBE;
-                position++;
-            }
-            else
-                array[y]->value.com = F_JB;
-
-            y++;
-        }
-
-        else if (buffer[position] == '>')
-        {
-            position++;
-            array[y]->type = OP;
-            if (buffer[position] == '=')
-            {
-                array[y]->value.com = F_JAE;
-                position++;
-            }
-            else
-                array[y]->value.com = F_JA;
-
-            y++;
-        }
-
-        else if (buffer[position] == '!')
-        {
-            position++;
-            array[y]->type = OP;
-            if (buffer[position] == '=')
-            {
-                array[y]->value.com = F_JNE;
-                position++;
-            }
-            else
-                printf ("AAAAAAAAA\n");
-
-            y++;
-        }
-        
-        else
-        {
-            printf ("ER - [%d]\n", buffer[position-1]);
-        }
     }
     array[y]->value.var = '$';
 }
@@ -191,7 +122,7 @@ void FindCommand (char* com, TypeCommand_t* com_type, int* com_value, Tree_t* tr
     {
         if (!strcmp (array_command[i].name, com))
         {
-            *com_type = array_command[i].t_com;
+            *com_type = OP;
             *com_value = array_command[i].n_com;
         }
     }
@@ -229,9 +160,11 @@ Node_t* GetG (int* pointer, Node_t** array)
 
 Node_t* GetFunc (int* pointer, Node_t** array)
 {
+    array[*pointer]->type = FUNC;
     Node_t* value = array[*pointer];
-    if (array[*pointer]->value.com == F_FUNC)
+    if (array[(*pointer)+1]->value.com == F_BEGIN_FUNC)
     {
+        (*pointer)++;
         (*pointer)++;
         (*pointer)++;
         GetStop (pointer, array, value);
@@ -390,6 +323,35 @@ Node_t* GetWhile (int* pointer, Node_t** array)
     }
     else
     {
-        return GetV (pointer, array);
+        return GetO (pointer, array);
     }
+}
+
+Node_t* GetO (int* pointer, Node_t** array)
+{
+    if (array[*pointer]->value.com == F_PRINT)
+    {
+        Node_t* main_node = array[*pointer];
+        (*pointer)++;
+
+        if (array[*pointer]->value.com != F_BRACE_OPEN)
+        {
+            printf ("need [(]\n");
+            assert (0);
+        }
+        (*pointer)++;
+        
+        Node_t* node = GetE (pointer, array);
+
+        if (array[*pointer]->value.com != F_BRACE_CLOSE)
+        {
+            printf ("need [)]\n");
+            assert (0);
+        }
+        (*pointer)++;
+
+        main_node->right = node;
+        return main_node;
+    }
+    return GetV (pointer, array);
 }

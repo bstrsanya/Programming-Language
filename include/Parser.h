@@ -7,51 +7,58 @@
 const int SIZE_ARRAY = 100;
 const int SIZE_TABLE_VAR = 10;
 const char FILE_EXPRESSION[] = "test_example.txt";
-const char FILE_LATEX[]      = "INPUT.txt";
+const char FILE_LATEX[]      = "output.txt";
 const double SMALL    = 10e-8;
 
 enum TypeCommand_t
 {
-    NUM = 1,
-    VAR = 2,
-    OP  = 3,
+    NUM = 1,               // CONSTANT
+    VAR = 2,               // IDENTIFIER
+    OP  = 3,               // KEYWORD
     FUNC = 5,
     BLOCK = 6,
     INVALID_TYPE = -1
 };
 
-enum ListCommand_t
+
+enum ListCommand_t 
 {
-    F_COS   = 1,
-    F_SIN   = 2,
-    F_TAN   = 3,
-    F_CTG   = 4,
-    F_LN    = 5,
-    F_ADD   = 43,
-    F_SUB   = 45,
-    F_MUL   = 42,
-    F_DIV   = 47,
-    F_DEG   = 94,
-    F_BRACE_OPEN  = 40,
-    F_BRACE_CLOSE = 41,
-    F_E     = 101,
-    F_ASSIGNMENT   = 61,
-    F_IF    = 6,
-    F_FUNC  = 7,
-    F_CURLY_BRACE_OPEN  = 123,
-    F_CURLY_BRACE_CLOSE = 125,
-    F_INTERRUPT = 59,
-    F_ELSE  = 9,
-    F_INVALID = -1,
-    F_WHILE = 10,
-    F_JB  = 11, // <
-    F_JA  = 12, // >
-    F_JBE = 13, // <=
-    F_JAE = 14, // >=
-    F_JE  = 15, // = 
-    F_JNE = 16, //
-    F_INT = 17,
-    F_DOUBLE = 18 
+    F_INVALID    = -1,
+
+    F_IF         = 11,
+    F_WHILE      = 12,
+    F_ELSE       = 13,
+    F_ASSIGNMENT = 14,
+
+    F_SIN        = 21,
+    F_COS        = 22,
+    F_TAN        = 23,
+    F_CTG        = 24,
+    F_ADD        = 25,
+    F_SUB        = 26,
+    F_MUL        = 27,
+    F_DIV        = 28,
+    F_LN         = 29,
+    F_DEG        = 30,
+
+    F_JE         = 31,
+    F_JB         = 32,
+    F_JA         = 33,
+    F_JBE        = 34,
+    F_JAE        = 35,
+    F_JNE        = 36,
+
+    F_INTERRUPT         = 41,
+    F_BRACE_OPEN        = 42,
+    F_BRACE_CLOSE       = 43,
+    F_CURLY_BRACE_OPEN  = 44,
+    F_CURLY_BRACE_CLOSE = 45,
+
+    F_FUNC   = 51,
+    F_INT    = 52,
+    F_DOUBLE = 53,
+    F_BEGIN_FUNC = 54,
+    F_PRINT = 55
 };
 
 struct Node_t 
@@ -83,7 +90,6 @@ struct Command_t
 {
     const char* name;
     ListCommand_t n_com;
-    TypeCommand_t t_com;
 };
 
 void ReadDataBase (Tree_t* tree);
@@ -101,6 +107,7 @@ Node_t* GetIf (int* pointer, Node_t** array);
 void GetStop (int* pointer, Node_t** array, Node_t* main_value);
 Node_t* GetWhile (int* pointer, Node_t** array);
 Node_t* GetV (int* pointer, Node_t** array);
+Node_t* GetO (int* pointer, Node_t** array);
 
 Node_t** CreateArrayTokens ();
 
@@ -112,5 +119,8 @@ void TreeDtor (Tree_t* tree);
 // void CreateDot (Node_t* node, FILE* file_dot);
 void CreateDotUSER (Node_t* node, FILE* file_dot, Tree_t* tree);
 void PrintDot (Node_t* node, const char* file_input, Tree_t* tree);
+
+void CreateTreeTxt (Tree_t* tree);
+void PrintTxt (Node_t* node, Tree_t* tree);
 
 #endif
