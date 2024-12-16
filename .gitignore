@@ -1,6 +1,6 @@
 *.o
-language
-INPUT
+backend
+frontend
 *.txt
 *.dot
 *.png

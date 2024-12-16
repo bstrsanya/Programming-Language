@@ -6,7 +6,6 @@
 #include <ctype.h>
 
 #include "Parser.h"
-#include "General.h"
 
 void ReadDataBase (Tree_t* tree)
 {

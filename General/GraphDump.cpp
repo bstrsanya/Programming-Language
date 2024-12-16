@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "Parser.h"
 #include "General.h"
+
+void CreateDotUSER (Node_t* node, FILE* file_dot, Tree_t* tree);
+void PrintDot (Node_t* node, const char* file_input, Tree_t* tree);
 
 // void CreateDot (Node_t* node, FILE* file_dot)
 // {

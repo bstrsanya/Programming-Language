@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "Parser.h"
-#include "General.h"
 
 Node_t* GetN (int* pointer, Node_t** array)
 {
