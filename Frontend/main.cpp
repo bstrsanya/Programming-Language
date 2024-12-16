@@ -8,7 +8,7 @@ int main ()
     Tree_t tree = {};
     TreeCtor (&tree, FILE_EXPRESSION);
 
-    PrintDot (tree.expression, "qwe.png", &tree);
+    PrintDot (tree.expression, "frontend.png", &tree);
 
     CreateTreeTxt (&tree);
 

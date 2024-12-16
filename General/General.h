@@ -48,7 +48,8 @@ enum ListCommand_t
     F_INT    = 52,
     F_DOUBLE = 53,
     F_BEGIN_FUNC = 54,
-    F_PRINT = 55
+    F_PRINT = 55,
+    F_UNDERLINING = 56
 };
 
 struct Node_t 
@@ -112,9 +113,13 @@ constexpr Command_t array_command[] = {
     {"int"   , F_INT},
     {"double", F_DOUBLE},
     {"()"    , F_BEGIN_FUNC},
-    {"print" , F_PRINT}
+    {"print" , F_PRINT},
+    {"_"     , F_UNDERLINING}
 };
 
 const int NUM_COMMAND = sizeof (array_command) / sizeof (array_command[0]);
+
+void CreateDotUSER (Node_t* node, FILE* file_dot, Tree_t* tree);
+void PrintDot (Node_t* node, const char* file_input, Tree_t* tree);
 
 #endif

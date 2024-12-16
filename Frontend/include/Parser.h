@@ -8,7 +8,7 @@
 const int SIZE_ARRAY = 100;
 const int SIZE_TABLE_VAR = 10;
 const char FILE_EXPRESSION[] = "test_example.txt";
-const char FILE_LATEX[]      = "output.txt";
+const char FILE_LATEX[]      = "tree.txt";
 const double SMALL    = 10e-8;
 
 void ReadDataBase (Tree_t* tree);
@@ -36,8 +36,6 @@ void TreeCtor (Tree_t* tree, const char* name_file);
 void TreeDtor (Tree_t* tree);
 
 // void CreateDot (Node_t* node, FILE* file_dot);
-void CreateDotUSER (Node_t* node, FILE* file_dot, Tree_t* tree);
-void PrintDot (Node_t* node, const char* file_input, Tree_t* tree);
 
 void CreateTreeTxt (Tree_t* tree);
 void PrintTxt (Node_t* node, Tree_t* tree);
