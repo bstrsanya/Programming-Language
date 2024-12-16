@@ -13,15 +13,15 @@ FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggressive-loop
 		-fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
 CC = g++
-II = -I./lib/include -I./include
+II = -I./lib/include -I./Frontend/include
 
 all: language
 
 language: ./obj/main.o ./obj/ReadFile.o ./obj/SizeFile.o ./obj/CtorDtor.o ./obj/Parser.o ./obj/GraphDump.o ./obj/ParserNumbers.o 
 	g++ ./obj/main.o ./obj/ReadFile.o ./obj/SizeFile.o ./obj/CtorDtor.o ./obj/Parser.o ./obj/GraphDump.o ./obj/ParserNumbers.o ${FLAGS} -o language
 
-./obj/main.o: main.cpp
-	$(CC) $(II) $(FLAGS) -c main.cpp -o ./obj/main.o
+./obj/main.o: ./Frontend/main.cpp
+	$(CC) $(II) $(FLAGS) -c ./Frontend/main.cpp -o ./obj/main.o
 
 ./obj/ReadFile.o: ./lib/src/ReadFile.cpp
 	$(CC) $(II) $(FLAGS) -c ./lib/src/ReadFile.cpp -o ./obj/ReadFile.o
@@ -29,17 +29,17 @@ language: ./obj/main.o ./obj/ReadFile.o ./obj/SizeFile.o ./obj/CtorDtor.o ./obj/
 ./obj/SizeFile.o: ./lib/src/SizeFile.cpp
 	$(CC) $(II) $(FLAGS) -c ./lib/src/SizeFile.cpp -o ./obj/SizeFile.o
 
-./obj/CtorDtor.o: ./src/CtorDtor.cpp
-	$(CC) $(II) $(FLAGS) -c ./src/CtorDtor.cpp -o ./obj/CtorDtor.o
+./obj/CtorDtor.o: ./Frontend/src/CtorDtor.cpp
+	$(CC) $(II) $(FLAGS) -c ./Frontend/src/CtorDtor.cpp -o ./obj/CtorDtor.o
 
-./obj/Parser.o: ./src/Parser.cpp
-	$(CC) $(II) $(FLAGS) -c ./src/Parser.cpp -o ./obj/Parser.o
+./obj/Parser.o: ./Frontend/src/Parser.cpp
+	$(CC) $(II) $(FLAGS) -c ./Frontend/src/Parser.cpp -o ./obj/Parser.o
 
-./obj/GraphDump.o: ./src/GraphDump.cpp
-	$(CC) $(II) $(FLAGS) -c ./src/GraphDump.cpp -o ./obj/GraphDump.o
+./obj/GraphDump.o: ./Frontend/src/GraphDump.cpp
+	$(CC) $(II) $(FLAGS) -c ./Frontend/src/GraphDump.cpp -o ./obj/GraphDump.o
 
-./obj/ParserNumbers.o: ./src/ParserNumbers.cpp
-	$(CC) $(II) $(FLAGS) -c ./src/ParserNumbers.cpp -o ./obj/ParserNumbers.o
+./obj/ParserNumbers.o: ./Frontend/src/ParserNumbers.cpp
+	$(CC) $(II) $(FLAGS) -c ./Frontend/src/ParserNumbers.cpp -o ./obj/ParserNumbers.o
 
 clean:
 	rm -rf ./obj/*.o language
