@@ -17,5 +17,6 @@ void ReadDataBase (Tree_t* tree);
 Node_t** CreateArrayTokens ();
 void Tokenization (Tree_t* tree);
 Node_t* GetP (int* pointer, Node_t** array);
+void CreateAsmFile (Node_t* node, Tree_t* tree);
 
 #endif

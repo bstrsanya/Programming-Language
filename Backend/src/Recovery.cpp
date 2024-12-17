@@ -16,10 +16,6 @@ void TreeCtor (Tree_t* tree, const char* name_file)
     assert (table);
     for (int i = 0; i < 10; i++)
         table[i] = NULL;
-    
-    table[0] = "main";
-    table[1] = "factorial";
-    table[2] = "n";
 
     tree->table_var = table;
 
@@ -62,8 +58,6 @@ void TreeDtor (Tree_t* tree)
 {
     assert (tree);
 
-    // NodeDtor (tree->array[0]);
-
     for (int i = 0; i < SIZE_ARRAY; i++)
     {
         if (tree->array[i])
@@ -71,7 +65,6 @@ void TreeDtor (Tree_t* tree)
     }
 
     free (tree->array);
-    // NodeDtor (tree->expression_diff);
 
     // free (tree->table_var);
     free (tree->read_data);
@@ -168,6 +161,25 @@ void Tokenization (Tree_t* tree)
         }  
     }
     array[y]->value.var = '$';
+    y++;
+
+    while (buffer[position] != 0)
+    {
+        while (buffer[position] == ' ' || buffer[position] == '\n')
+            position++;
+        
+        int n = 0;
+        sscanf (buffer + position, "%*[a-zA-Z]%n", &n);
+        buffer[position + n] = '\0';
+
+        int i = 0;
+        while (tree->table_var[i])
+            i++;
+        
+        tree->table_var[i] = buffer + position;
+
+        position += n + 1;
+    }
 }
 
 Node_t* GetP (int* pointer, Node_t** array)
@@ -207,6 +219,78 @@ Node_t* GetP (int* pointer, Node_t** array)
     }
 }
 
+void CreateAsmFile (Node_t* node, Tree_t* tree)
+{
+    if (node->type == FUNC)
+    {
+        if (node->left) CreateAsmFile (node->left, tree);
+        if (node->right) CreateAsmFile (node->right, tree);
+    }
+    if (node->value.com == F_INTERRUPT)
+    {
+        if (node->left) CreateAsmFile (node->left, tree);
+        if (node->right) CreateAsmFile (node->right, tree);
+    }
+    if (node->value.com == F_INT || node->value.com == F_DOUBLE)
+    {
+        CreateAsmFile (node->right, tree);
+    }
+    if (node->value.com == F_ASSIGNMENT)
+    {
+        CreateAsmFile (node->right, tree);
+        fprintf (tree->output, "POP [%d]\n", node->left->value.var);
+    }
+    if (node->type == NUM)
+    {
+        fprintf (tree->output, "PUSH %g\n", node->value.number);
+    }
+    if (node->value.com == F_ADD)
+    {
+        CreateAsmFile (node->left, tree);
+        CreateAsmFile (node->right, tree);
+        fprintf (tree->output, "ADD\n");
+    }
+    if (node->value.com == F_SUB)
+    {
+        CreateAsmFile (node->left, tree);
+        CreateAsmFile (node->right, tree);
+        fprintf (tree->output, "SUB\n");
+    }
+    if (node->value.com == F_MUL)
+    {
+        CreateAsmFile (node->left, tree);
+        CreateAsmFile (node->right, tree);
+        fprintf (tree->output, "MUL\n");
+    }
+    if (node->value.com == F_DIV)
+    {
+        CreateAsmFile (node->left, tree);
+        CreateAsmFile (node->right, tree);
+        fprintf (tree->output, "DIV\n");
+    }
+    if (node->type == VAR)
+    {
+        fprintf (tree->output, "PUSH [%d]\n", node->value.var);
+    }
+    if (node->value.com == F_WHILE)
+    {
+        fprintf (tree->output, "START:\n");
+        CreateAsmFile (node->left, tree);
+        CreateAsmFile (node->right, tree);
+        fprintf (tree->output, "JMP START:\nEND:\n");                
+    }   
+    if (node->value.com == F_JBE)
+    {
+        CreateAsmFile (node->left, tree);
+        CreateAsmFile (node->right, tree);
+        fprintf (tree->output, "JA END:\n");
+    } 
+    if (node->value.com == F_PRINT)
+    {
+        CreateAsmFile (node->right, tree);
+        fprintf (tree->output, "OUT\n");
+    }
+}
 
 
 

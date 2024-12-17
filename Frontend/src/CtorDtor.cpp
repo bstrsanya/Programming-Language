@@ -84,7 +84,7 @@ void CreateTreeTxt (Tree_t* tree)
     int i = 0;
     while (tree->table_var[i])
     {
-        fprintf (tree->output, "%d%10s\n", i, tree->table_var[i]);
+        fprintf (tree->output, "%s\n", tree->table_var[i]);
         i++;
     }
 }
@@ -129,7 +129,7 @@ void PrintTxt (Node_t* node, Tree_t* tree)
         }
         case OP:
         {
-            if (node->value.com != F_PRINT)
+            if (node->value.com != F_PRINT && node->value.com != F_INT && node->value.com != F_DOUBLE)
             {
                 fprintf (tree->output, "(3 %d ", node->value.com);
                 PrintTxt (node->left, tree);

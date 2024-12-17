@@ -109,7 +109,7 @@ void Tokenization (Tree_t* tree)
                 array[y]->value.com = (ListCommand_t) com_value;
 
             y++;
-                position += n + 1;
+            position += n + 1;
             }
     }
     array[y]->value.var = '$';
