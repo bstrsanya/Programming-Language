@@ -16,6 +16,7 @@ clean:
 	rm -rf ./backend.png
 	rm -rf ./frontend.png
 	rm -rf ./tree.txt
+	rm -rf ./aaa.dot
 
 processor:
 	./Processor/asm ./asm.txt ./asm.bin

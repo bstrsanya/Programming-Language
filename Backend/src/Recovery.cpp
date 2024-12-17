@@ -219,17 +219,20 @@ Node_t* GetP (int* pointer, Node_t** array)
     }
 }
 
-int number_func_start_if = 100;
-int number_func_end_if   = 100;
-int number_func_start_while = 0;
-int number_func_end_while   = 0;
-
 void CreateAsmFile (Node_t* node, Tree_t* tree)
 {
     if (node->type == FUNC)
     {
         if (node->left) CreateAsmFile (node->left, tree);
         if (node->right) CreateAsmFile (node->right, tree);
+    }
+    if (node->type == NUM)
+    {
+        fprintf (tree->output, "PUSH %g\n", node->value.number);
+    }
+    if (node->type == VAR)
+    {
+        fprintf (tree->output, "PUSH [%d]\n", node->value.var);
     }
     if (node->value.com == F_INTERRUPT)
     {
@@ -244,10 +247,6 @@ void CreateAsmFile (Node_t* node, Tree_t* tree)
     {
         CreateAsmFile (node->right, tree);
         fprintf (tree->output, "POP [%d]\n", node->left->value.var);
-    }
-    if (node->type == NUM)
-    {
-        fprintf (tree->output, "PUSH %g\n", node->value.number);
     }
     if (node->value.com == F_ADD)
     {
@@ -273,41 +272,37 @@ void CreateAsmFile (Node_t* node, Tree_t* tree)
         CreateAsmFile (node->right, tree);
         fprintf (tree->output, "DIV\n");
     }
-    if (node->type == VAR)
-    {
-        fprintf (tree->output, "PUSH [%d]\n", node->value.var);
-    }
+    
     if (node->value.com == F_WHILE)
     {
-        fprintf (tree->output, "START%d:\n", number_func_start_while);
-        if (node->left->value.com == F_JBE)
-        {
-            CreateAsmFile (node->left->left, tree);
-            CreateAsmFile (node->left->right, tree);
-            fprintf (tree->output, "JA END%d:\n", number_func_end_while);
-        }
+        fprintf (tree->output, "WHILE%p:\n", node);
+        CreateAsmFile (node->left->left, tree);
+        CreateAsmFile (node->left->right, tree);
+        ChangeSign (node, tree);
         CreateAsmFile (node->right, tree);
-        fprintf (tree->output, "JMP START%d:\nEND%d:\n", number_func_start_while++, number_func_end_while++);                
+        fprintf (tree->output, "JMP WHILE%p:\nLABEL%p:\n", node, node);                
     }
-
-    // if (node->value.com == F_JBE)
-    // {
-    //     CreateAsmFile (node->left, tree);
-    //     CreateAsmFile (node->right, tree);
-    //     fprintf (tree->output, "JA END%d:\n", number_func_end);
-    // } 
     
     if (node->value.com == F_IF)
     {
-        if (node->left->value.com == F_JBE)
+        CreateAsmFile (node->left->left, tree);
+        CreateAsmFile (node->left->right, tree);
+        ChangeSign (node, tree);
+        if (node->right->value.com != F_ELSE)
         {
-            CreateAsmFile (node->left->left, tree);
-            CreateAsmFile (node->left->right, tree);
-            fprintf (tree->output, "JA END%d:\n", number_func_end_if);
+            CreateAsmFile (node->right, tree);
+            fprintf (tree->output, "LABEL%p:\n", node);
         }
-        CreateAsmFile (node->right, tree);
-        fprintf (tree->output, "END%d:\n", number_func_end_if++);
+        else 
+        {
+            CreateAsmFile (node->right->left, tree);
+            fprintf (tree->output, "JMP LABEL%p:\n", node->right);
+            fprintf (tree->output, "LABEL%p:\n", node);
+            CreateAsmFile (node->right->right, tree);
+            fprintf (tree->output, "LABEL%p:\n", node->right);
+        }
     }
+
     if (node->value.com == F_PRINT)
     {
         CreateAsmFile (node->right, tree);
@@ -317,6 +312,34 @@ void CreateAsmFile (Node_t* node, Tree_t* tree)
     {
         fprintf (tree->output, "IN\n");
         fprintf (tree->output, "POP [%d]\n", node->right->value.var);
+    }
+}
+
+void ChangeSign (Node_t* node, Tree_t* tree)
+{
+    if (node->left->value.com == F_JBE)
+    {
+        fprintf (tree->output, "JA LABEL%p:\n", node);
+    }
+    else if (node->left->value.com == F_JE)
+    {
+        fprintf (tree->output, "JNE LABEL%p:\n", node);
+    }
+    else if (node->left->value.com == F_JAE)
+    {
+        fprintf (tree->output, "JB LABEL%p:\n", node);
+    }
+    else if (node->left->value.com == F_JB)
+    {
+        fprintf (tree->output, "JAE LABEL%p:\n", node);
+    }
+    else if (node->left->value.com == F_JA)
+    {
+        fprintf (tree->output, "JBE LABEL%p:\n", node);
+    }
+    else if (node->left->value.com == F_JNE)
+    {
+        fprintf (tree->output, "JE LABEL%p:\n", node);
     }
 }
 

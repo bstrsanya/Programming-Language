@@ -46,6 +46,10 @@ void TreeCtor (Tree_t* tree, const char* name_file)
     for (int i = 0; i < SIZE_TABLE_VAR; i++)
         table[i] = NULL;
 
+    char* array = (char*) calloc (1000, sizeof (char));
+    assert (array);
+
+    tree->read_data = array;
     tree->table_var = table;
 
     ReadDataBase (tree);
@@ -61,11 +65,7 @@ void TreeDtor (Tree_t* tree)
     NodeDtor (tree->array[0]);
 
     for (int i = 0; i < SIZE_ARRAY; i++)
-    {
-        if (tree->array[i])
-            free (tree->array[i]);
-    }
-
+        free (tree->array[i]);
     free (tree->array);
     NodeDtor (tree->expression_diff);
 

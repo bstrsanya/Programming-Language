@@ -7,7 +7,7 @@
 
 const char INPUT_FILE[] = "tree.txt";
 const char ASM_FILE[]   = "asm.txt";
-const int SIZE_ARRAY = 1000;
+const int SIZE_ARRAY    = 1000;
 
 void TreeCtor (Tree_t* tree, const char* name_file);
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right);
@@ -18,5 +18,6 @@ Node_t** CreateArrayTokens ();
 void Tokenization (Tree_t* tree);
 Node_t* GetP (int* pointer, Node_t** array);
 void CreateAsmFile (Node_t* node, Tree_t* tree);
+void ChangeSign (Node_t* node, Tree_t* tree);
 
 #endif

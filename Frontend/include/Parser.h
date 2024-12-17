@@ -12,7 +12,7 @@ const char FILE_LATEX[]      = "tree.txt";
 const double SMALL    = 10e-8;
 
 void ReadDataBase (Tree_t* tree);
-void Tokenization (Tree_t* tree);
+void Tokenization (Tree_t* tree, char* buffer);
 Node_t* GetG (int* pointer, Node_t** array);
 Node_t* GetN (int* pointer, Node_t** array);
 Node_t* GetE (int* pointer, Node_t** array);
@@ -39,5 +39,7 @@ void TreeDtor (Tree_t* tree);
 
 void CreateTreeTxt (Tree_t* tree);
 void PrintTxt (Node_t* node, Tree_t* tree);
+
+char* CreateStr (char* main_str, int len, Tree_t* tree);
 
 #endif
