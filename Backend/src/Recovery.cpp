@@ -219,6 +219,11 @@ Node_t* GetP (int* pointer, Node_t** array)
     }
 }
 
+int number_func_start_if = 100;
+int number_func_end_if   = 100;
+int number_func_start_while = 0;
+int number_func_end_while   = 0;
+
 void CreateAsmFile (Node_t* node, Tree_t* tree)
 {
     if (node->type == FUNC)
@@ -274,17 +279,35 @@ void CreateAsmFile (Node_t* node, Tree_t* tree)
     }
     if (node->value.com == F_WHILE)
     {
-        fprintf (tree->output, "START:\n");
-        CreateAsmFile (node->left, tree);
+        fprintf (tree->output, "START%d:\n", number_func_start_while);
+        if (node->left->value.com == F_JBE)
+        {
+            CreateAsmFile (node->left->left, tree);
+            CreateAsmFile (node->left->right, tree);
+            fprintf (tree->output, "JA END%d:\n", number_func_end_while);
+        }
         CreateAsmFile (node->right, tree);
-        fprintf (tree->output, "JMP START:\nEND:\n");                
-    }   
-    if (node->value.com == F_JBE)
+        fprintf (tree->output, "JMP START%d:\nEND%d:\n", number_func_start_while++, number_func_end_while++);                
+    }
+
+    // if (node->value.com == F_JBE)
+    // {
+    //     CreateAsmFile (node->left, tree);
+    //     CreateAsmFile (node->right, tree);
+    //     fprintf (tree->output, "JA END%d:\n", number_func_end);
+    // } 
+    
+    if (node->value.com == F_IF)
     {
-        CreateAsmFile (node->left, tree);
+        if (node->left->value.com == F_JBE)
+        {
+            CreateAsmFile (node->left->left, tree);
+            CreateAsmFile (node->left->right, tree);
+            fprintf (tree->output, "JA END%d:\n", number_func_end_if);
+        }
         CreateAsmFile (node->right, tree);
-        fprintf (tree->output, "JA END:\n");
-    } 
+        fprintf (tree->output, "END%d:\n", number_func_end_if++);
+    }
     if (node->value.com == F_PRINT)
     {
         CreateAsmFile (node->right, tree);

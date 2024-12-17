@@ -93,7 +93,7 @@ void Tokenization (Tree_t* tree)
         
             if (buffer[position+n] != ' ' && buffer[position+n] != '\n' && buffer[position+n] != '\t')
             {
-                printf ("Please observe the aesthetics of the code, namely, put spaces after [%d]\n", position);
+                printf ("Please observe the aesthetics of the code, namely, put spaces after [%c]\n", buffer[position]);
                 assert (0);
             }
             buffer[position+n] = '\0';
