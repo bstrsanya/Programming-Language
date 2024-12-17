@@ -129,7 +129,7 @@ void PrintTxt (Node_t* node, Tree_t* tree)
         }
         case OP:
         {
-            if (node->value.com != F_PRINT && node->value.com != F_INT && node->value.com != F_DOUBLE)
+            if (node->value.com != F_PRINT && node->value.com != F_INT && node->value.com != F_DOUBLE && node->value.com != F_INPUT)
             {
                 fprintf (tree->output, "(3 %d ", node->value.com);
                 PrintTxt (node->left, tree);

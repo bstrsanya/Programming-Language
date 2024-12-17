@@ -328,7 +328,7 @@ Node_t* GetWhile (int* pointer, Node_t** array)
 
 Node_t* GetO (int* pointer, Node_t** array)
 {
-    if (array[*pointer]->value.com == F_PRINT)
+    if (array[*pointer]->value.com == F_PRINT || array[*pointer]->value.com == F_INPUT)
     {
         Node_t* main_node = array[*pointer];
         (*pointer)++;

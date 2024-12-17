@@ -49,7 +49,8 @@ enum ListCommand_t
     F_DOUBLE = 53,
     F_BEGIN_FUNC = 54,
     F_PRINT = 55,
-    F_UNDERLINING = 56
+    F_UNDERLINING = 56,
+    F_INPUT = 57
 };
 
 struct Node_t 
@@ -113,8 +114,9 @@ constexpr Command_t array_command[] = {
     {"int"   , F_INT},
     {"double", F_DOUBLE},
     {"()"    , F_BEGIN_FUNC},
-    {"print" , F_PRINT},
-    {"_"     , F_UNDERLINING}
+    {"output", F_PRINT},
+    {"_"     , F_UNDERLINING},
+    {"input" , F_INPUT}
 };
 
 const int NUM_COMMAND = sizeof (array_command) / sizeof (array_command[0]);

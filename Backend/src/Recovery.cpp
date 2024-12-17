@@ -290,6 +290,11 @@ void CreateAsmFile (Node_t* node, Tree_t* tree)
         CreateAsmFile (node->right, tree);
         fprintf (tree->output, "OUT\n");
     }
+    if (node->value.com == F_INPUT)
+    {
+        fprintf (tree->output, "IN\n");
+        fprintf (tree->output, "POP [%d]\n", node->right->value.var);
+    }
 }
 
 
