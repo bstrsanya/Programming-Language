@@ -1,6 +1,11 @@
 #ifndef GENERAL_H
 #define GENERAL_H
 
+// tree.h tree.cpp
+// GraphDump.h
+// commands.h
+// ...
+
 enum TypeCommand_t
 {
     NUM = 1,               // CONSTANT

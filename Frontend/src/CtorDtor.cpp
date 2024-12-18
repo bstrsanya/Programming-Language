@@ -4,6 +4,8 @@
 
 #include "Parser.h"
 
+
+
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right)
 {
     Node_t* new_node = (Node_t*) calloc (1, sizeof (Node_t));
@@ -34,12 +36,15 @@ void NodeDtor (Node_t* node)
     if (node->type == BLOCK) free (node);
 }
 
-void TreeCtor (Tree_t* tree, const char* name_file)
+void TreeCtor (Tree_t* tree, const char* name_file_input, const char* name_file_output)
 {
     assert (tree);
-    assert (name_file);
+    assert (name_file_input);
+    assert (name_file_output);
 
-    tree->input = fopen (name_file, "rb");
+    printf ("I'm frontend! Open file [%s] for read and [%s] for writing\n", name_file_input, name_file_output);
+
+    tree->input = fopen (name_file_input, "rb");
 
     char** table = (char**) calloc (SIZE_TABLE_VAR, sizeof (char*));
     assert (table);
@@ -55,7 +60,7 @@ void TreeCtor (Tree_t* tree, const char* name_file)
     ReadDataBase (tree);
     fclose (tree->input);
 
-    tree->output = fopen (FILE_LATEX, "wb");
+    tree->output = fopen (name_file_output, "wb");
 }
 
 void TreeDtor (Tree_t* tree)

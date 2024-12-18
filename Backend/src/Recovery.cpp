@@ -5,12 +5,16 @@
 
 #include "Recovery.h"
 
-void TreeCtor (Tree_t* tree, const char* name_file)
+//TODO: Move to COmmon
+void TreeCtor (Tree_t* tree, const char* name_file_input, const char* name_file_output)
 {
     assert (tree);
-    assert (name_file);
+    assert (name_file_input);
+    assert (name_file_output);
 
-    tree->input = fopen (name_file, "rb");
+    printf ("I'm backend! Open file [%s] for read and [%s] for writing\n", name_file_input, name_file_output);
+
+    tree->input = fopen (name_file_input, "rb");
 
     char** table = (char**) calloc (100, sizeof (char*));
     assert (table);
@@ -22,7 +26,7 @@ void TreeCtor (Tree_t* tree, const char* name_file)
     ReadDataBase (tree);
     fclose (tree->input);
 
-    tree->output = fopen (ASM_FILE, "wb");
+    tree->output = fopen (name_file_output, "wb");
 }
 
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right)
@@ -96,6 +100,7 @@ void ReadDataBase (Tree_t* tree)
     // }
 }
 
+//TODO: MOre asserts
 Node_t** CreateArrayTokens ()
 {
     Node_t** array = (Node_t**) calloc (SIZE_ARRAY, sizeof (Node_t*));
@@ -181,7 +186,7 @@ void Tokenization (Tree_t* tree)
         position += n + 1;
     }
 }
-
+//TODO: NAMING NOT RESUCRSIVE DESCENT
 Node_t* GetP (int* pointer, Node_t** array)
 {
     if (array[*pointer]->value.com == F_BRACE_OPEN)
@@ -221,6 +226,7 @@ Node_t* GetP (int* pointer, Node_t** array)
 
 void CreateAsmFile (Node_t* node, Tree_t* tree)
 {
+    //TODO: if -> switch
     if (node->type == FUNC)
     {   
         if (!node->left && !node->right)
@@ -354,6 +360,7 @@ void ChangeSign (Node_t* node, Tree_t* tree)
     {
         fprintf (tree->output, "JE LABEL%p:\n", node);
     }
+    //TODO: elseif -> switch
 }
 
 

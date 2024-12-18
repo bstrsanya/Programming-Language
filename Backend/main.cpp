@@ -3,10 +3,11 @@
 
 #include "Recovery.h"
 
-int main ()
+int main (int argc, const char *argv[])
 {
+    //TODO: check args
     Tree_t tree = {};
-    TreeCtor (&tree, INPUT_FILE);
+    TreeCtor (&tree, argv[1], argv[2]);
 
     PrintDot (tree.expression, "backend.png", &tree);
     fprintf (tree.output, "CALL main:\nHLT\n");

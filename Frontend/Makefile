@@ -17,8 +17,8 @@ II = -I ./lib/include -I ./Frontend/include -I ./General
 
 all: frontend
 
-frontend: ./Frontend/obj/main.o ./Frontend/obj/ReadFile.o ./Frontend/obj/SizeFile.o ./Frontend/obj/CtorDtor.o ./Frontend/obj/Parser.o ./Frontend/obj/GraphDump.o ./Frontend/obj/ParserNumbers.o 
-	g++ ./Frontend/obj/main.o ./Frontend/obj/ReadFile.o ./Frontend/obj/SizeFile.o ./Frontend/obj/CtorDtor.o ./Frontend/obj/Parser.o ./Frontend/obj/GraphDump.o ./Frontend/obj/ParserNumbers.o ${FLAGS} -o frontend
+frontend: ./Frontend/obj/main.o ./Frontend/obj/ReadFile.o ./Frontend/obj/SizeFile.o ./Frontend/obj/CtorDtor.o ./Frontend/obj/Parser.o ./Frontend/obj/GraphDump.o ./Frontend/obj/ParserFunc.o 
+	g++ ./Frontend/obj/main.o ./Frontend/obj/ReadFile.o ./Frontend/obj/SizeFile.o ./Frontend/obj/CtorDtor.o ./Frontend/obj/Parser.o ./Frontend/obj/GraphDump.o ./Frontend/obj/ParserFunc.o ${FLAGS} -o frontend
 
 ./Frontend/obj/main.o: ./Frontend/main.cpp
 	$(CC) $(II) $(FLAGS) -c ./Frontend/main.cpp -o ./Frontend/obj/main.o
@@ -38,8 +38,8 @@ frontend: ./Frontend/obj/main.o ./Frontend/obj/ReadFile.o ./Frontend/obj/SizeFil
 ./Frontend/obj/GraphDump.o: ./General/GraphDump.cpp
 	$(CC) $(II) $(FLAGS) -c ./General/GraphDump.cpp -o ./Frontend/obj/GraphDump.o
 
-./Frontend/obj/ParserNumbers.o: ./Frontend/src/ParserNumbers.cpp
-	$(CC) $(II) $(FLAGS) -c ./Frontend/src/ParserNumbers.cpp -o ./Frontend/obj/ParserNumbers.o
+./Frontend/obj/ParserFunc.o: ./Frontend/src/ParserFunc.cpp
+	$(CC) $(II) $(FLAGS) -c ./Frontend/src/ParserFunc.cpp -o ./Frontend/obj/ParserFunc.o
 
 clean:
 	rm -rf ./Frontend/obj/*.o frontend

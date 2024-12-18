@@ -5,11 +5,11 @@
 #include "ReadFile.h"
 #include "SizeFile.h"
 
-const char INPUT_FILE[] = "tree.txt";
-const char ASM_FILE[]   = "asm.txt";
+// const char INPUT_FILE[] = "tree.txt";
+// const char ASM_FILE[]   = "asm.txt";
 const int SIZE_ARRAY    = 1000;
 
-void TreeCtor (Tree_t* tree, const char* name_file);
+void TreeCtor (Tree_t* tree, const char* name_file_input, const char* name_file_output);
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right);
 void NodeDtor (Node_t* node);
 void TreeDtor (Tree_t* tree);

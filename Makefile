@@ -1,12 +1,8 @@
-all: built run processor
+all: built
 
 built:
 	make -f ./Frontend/Makefile
 	make -f ./Backend/Makefile
-
-run:
-	./frontend
-	./backend
 
 clean:
 	make -f ./Frontend/Makefile clean
@@ -17,7 +13,3 @@ clean:
 	rm -rf ./frontend.png
 	rm -rf ./tree.txt
 	rm -rf ./aaa.dot
-
-processor:
-	./Processor/asm ./asm.txt ./asm.bin
-	./Processor/pro ./asm.bin
