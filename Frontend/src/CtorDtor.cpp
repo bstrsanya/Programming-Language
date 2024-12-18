@@ -62,7 +62,7 @@ void TreeDtor (Tree_t* tree)
 {
     assert (tree);
 
-    NodeDtor (tree->array[0]);
+    NodeDtor (tree->expression);
 
     for (int i = 0; i < SIZE_ARRAY; i++)
         free (tree->array[i]);
@@ -129,7 +129,7 @@ void PrintTxt (Node_t* node, Tree_t* tree)
         }
         case OP:
         {
-            if (node->value.com != F_PRINT && node->value.com != F_INT && node->value.com != F_DOUBLE && node->value.com != F_INPUT)
+            if (node->value.com != F_PRINT && node->value.com != F_INT && node->value.com != F_DOUBLE && node->value.com != F_INPUT && node->value.com != F_SQRT)
             {
                 fprintf (tree->output, "(3 %d ", node->value.com);
                 PrintTxt (node->left, tree);

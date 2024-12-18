@@ -5,8 +5,8 @@
 #include "SizeFile.h"
 #include "General.h"
 
-const int SIZE_ARRAY = 100;
-const int SIZE_TABLE_VAR = 10;
+const int SIZE_ARRAY = 1000;
+const int SIZE_TABLE_VAR = 100;
 const char FILE_EXPRESSION[] = "test_example.txt";
 const char FILE_LATEX[]      = "tree.txt";
 const double SMALL    = 10e-8;
@@ -27,6 +27,8 @@ void GetStop (int* pointer, Node_t** array, Node_t* main_value);
 Node_t* GetWhile (int* pointer, Node_t** array);
 Node_t* GetV (int* pointer, Node_t** array);
 Node_t* GetO (int* pointer, Node_t** array);
+void GetProg (int* pointer, Node_t** array, Node_t* main_value);
+Node_t* GetF (int* pointer, Node_t** array);
 
 Node_t** CreateArrayTokens ();
 

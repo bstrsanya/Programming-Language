@@ -12,7 +12,7 @@ void TreeCtor (Tree_t* tree, const char* name_file)
 
     tree->input = fopen (name_file, "rb");
 
-    char** table = (char**) calloc (10, sizeof (char*));
+    char** table = (char**) calloc (100, sizeof (char*));
     assert (table);
     for (int i = 0; i < 10; i++)
         table[i] = NULL;
@@ -222,9 +222,18 @@ Node_t* GetP (int* pointer, Node_t** array)
 void CreateAsmFile (Node_t* node, Tree_t* tree)
 {
     if (node->type == FUNC)
-    {
-        if (node->left) CreateAsmFile (node->left, tree);
-        if (node->right) CreateAsmFile (node->right, tree);
+    {   
+        if (!node->left && !node->right)
+        {
+            fprintf (tree->output, "CALL %s:\n", tree->table_var[node->value.var]);
+        }
+        else
+        {
+            fprintf (tree->output, "%s:\n", tree->table_var[node->value.var]);
+            if (node->left) CreateAsmFile (node->left, tree);
+            if (node->right) CreateAsmFile (node->right, tree);
+            fprintf (tree->output, "RET\n");
+        }
     }
     if (node->type == NUM)
     {
@@ -302,7 +311,6 @@ void CreateAsmFile (Node_t* node, Tree_t* tree)
             fprintf (tree->output, "LABEL%p:\n", node->right);
         }
     }
-
     if (node->value.com == F_PRINT)
     {
         CreateAsmFile (node->right, tree);
@@ -312,6 +320,11 @@ void CreateAsmFile (Node_t* node, Tree_t* tree)
     {
         fprintf (tree->output, "IN\n");
         fprintf (tree->output, "POP [%d]\n", node->right->value.var);
+    }
+    if (node->value.com == F_SQRT)
+    {
+        CreateAsmFile (node->right, tree);
+        fprintf (tree->output, "SQRT\n");
     }
 }
 

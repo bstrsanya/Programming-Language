@@ -160,6 +160,14 @@ Node_t* GetP (int* pointer, Node_t** array)
         array[num]->right = value;
         return array[num];
     }
+    else if (array[*pointer]->type == OP && array[*pointer]->value.com == F_SQRT)
+    {
+        int num = *pointer;
+        (*pointer)++;
+        Node_t* value = GetP (pointer, array);
+        array[num]->right = value;
+        return array[num];
+    }
     else
         return GetN (pointer, array);
 }

@@ -47,7 +47,7 @@ void CreateDotUSER (Node_t* node, FILE* file_dot, Tree_t* tree)
 
     else if (node->type == FUNC)
     {
-        fprintf (file_dot, "node%p [shape=circle; style = filled; fillcolor = \"\"; label = \"%s\"];\n", node, "main");
+        fprintf (file_dot, "node%p [shape=circle; style = filled; fillcolor = \"\"; label = \"%s\"];\n", node, tree->table_var[node->value.var]);
     }
 
     else if (node->type == VAR)

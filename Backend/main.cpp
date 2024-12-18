@@ -9,8 +9,8 @@ int main ()
     TreeCtor (&tree, INPUT_FILE);
 
     PrintDot (tree.expression, "backend.png", &tree);
+    fprintf (tree.output, "CALL main:\nHLT\n");
     CreateAsmFile (tree.expression, &tree);
-    fprintf (tree.output, "HLT\n");
 
     TreeDtor (&tree);
 

@@ -75,19 +75,11 @@ void Tokenization (Tree_t* tree, char* buffer)
             array[y]->value.number = d;
             y++;
         }
-        else {
+        else if (isalpha (buffer[position]))
+        {
             int n = 0;
-            if (isalpha(buffer[position]))
-                sscanf (buffer + position, "%*[a-zA-Z]%n", &n);
-            else 
-                sscanf (buffer + position, "%*[(){}+-/*^;!=<>]%n", &n);
+            sscanf (buffer + position, "%*[a-zA-Z123456789_]%n", &n);
 
-            if (!n)
-            {
-                printf ("ERROR, unread symbol [%c]\n", buffer[position]);
-                assert (0);
-            }
-        
             char* str = CreateStr (buffer + position, n, tree);
             TypeCommand_t com_type;
             int com_value = 0;
@@ -102,7 +94,36 @@ void Tokenization (Tree_t* tree, char* buffer)
 
             y++;
             position += n;
+        }
+        else 
+        {
+            int n = 0;
+            sscanf (buffer + position, "%*[+-*/^{};_]%n", &n);
+            if (!n)
+            {
+                sscanf (buffer + position, "%*[=><!]%n", &n);
             }
+            if (!n)
+            {
+                if (buffer[position] == '(' || buffer[position] == ')')
+                    n = 1;
+            }
+            if (n) {
+            char* str = CreateStr (buffer + position, n, tree);
+            TypeCommand_t com_type;
+            int com_value = 0;
+            FindCommand (str, &com_type, &com_value, tree);
+
+            array[y]->type = (TypeCommand_t) com_type;
+
+            if (com_type == VAR)
+                array[y]->value.var = com_value;
+            else
+                array[y]->value.com = (ListCommand_t) com_value;
+
+            y++;
+            position += n; }
+        }
     }
     array[y]->value.var = '$';
 }
@@ -147,32 +168,40 @@ void FindCommand (char* com, TypeCommand_t* com_type, int* com_value, Tree_t* tr
 
 Node_t* GetG (int* pointer, Node_t** array)
 {
-    Node_t* value = GetFunc (pointer, array);
+    Node_t* main_node = NodeCtor (BLOCK, 0, NULL, NULL);
+    GetProg (pointer, array, main_node);
     if ((int) array[*pointer]->value.var != '$')
     {
         printf ("[%d]\n", *pointer);
         assert (0);
     }
     (*pointer)++;
-    return value;
+    return main_node;
+}
+
+void GetProg (int* pointer, Node_t** array, Node_t* main_value)
+{
+    while (array[*pointer]->value.var != '$')
+    {
+        Node_t* value = GetFunc (pointer, array);
+        Node_t* block = NodeCtor (BLOCK, 0, value, NULL);
+        main_value->right = block;
+        main_value = block;
+        (*pointer)++;
+    }
 }
 
 Node_t* GetFunc (int* pointer, Node_t** array)
 {
     array[*pointer]->type = FUNC;
     Node_t* value = array[*pointer];
-    if (array[(*pointer)+1]->value.com == F_BEGIN_FUNC)
+    while (array[(*pointer)+1]->value.com == F_BRACE_OPEN)
     {
+        (*pointer)++;
         (*pointer)++;
         (*pointer)++;
         (*pointer)++;
         GetStop (pointer, array, value);
-        (*pointer)++;
-    }
-    else
-    {
-        printf ("Программа должна начинаться с функции\n");
-        assert (0);
     }
     return value;
 }
@@ -195,7 +224,6 @@ void GetStop (int* pointer, Node_t** array, Node_t* main_value)
 
         main_value->right = block;
         main_value = block;
-
     }
 }
 
@@ -352,5 +380,19 @@ Node_t* GetO (int* pointer, Node_t** array)
         main_node->right = node;
         return main_node;
     }
+    return GetF (pointer, array);
+}
+
+Node_t* GetF (int* pointer, Node_t** array)
+{
+    if (array[(*pointer) + 1]->value.com == F_BRACE_OPEN)
+    {
+        array[*pointer]->type = FUNC;
+        (*pointer)++;
+        (*pointer)++;
+        (*pointer)++;
+        return array[(*pointer)-3];
+    }
+    
     return GetV (pointer, array);
 }
