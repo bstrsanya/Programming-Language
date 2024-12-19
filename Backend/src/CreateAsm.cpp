@@ -166,7 +166,7 @@ void WritingAsmFile (Node_t* node, Tree_t* tree)
                 }
                 default:
                 {
-                    printf ("I don't now this com\n");
+                    printf ("I don't now this command\n");
                     break;
                 }
             }

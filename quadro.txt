@@ -1,0 +1,83 @@
+main () 
+udos
+    double a = 0;
+    double b = 0;
+    double c = 0;
+
+    input (a);
+    input (b);
+    input (c);
+
+    double D = b * b - 4 * a * c;
+
+    double x = 0;
+    double y = 0;
+
+    if_alive (a != 0)
+    udos
+        SquareEqu ();
+    peresda
+    dead
+    udos
+        NoSquareEqu ();
+    peresda
+peresda
+
+SquareEqu () 
+udos
+    if_alive (D == 0)
+    udos
+        x = (0 - b) / (2 * a);
+        output (x);
+    peresda
+
+    if_alive (D > 0)
+    udos
+        double sqrtD = sqrt (D);
+        x = ((0 - b) - sqrtD) / (2 * a);
+        y = ((0 - b) + sqrtD) / (2 * a);
+        output (x);
+        output (y);
+    peresda
+
+    if_alive (D < 0)
+    udos
+        symbol (78);
+        symbol (79);
+        symbol (82);
+        symbol (79);
+        symbol (79);
+        symbol (84);
+        symbol (83);
+    peresda
+peresda
+
+NoSquareEqu () 
+udos
+    if_alive (b == 0)
+    udos
+        if_alive (c == 0)
+        udos
+            symbol (73);
+            symbol (78);
+            symbol (70);
+        peresda
+        dead
+        udos
+            symbol (78);
+            symbol (79);
+            symbol (82);
+            symbol (79);
+            symbol (79);
+            symbol (84);
+            symbol (83);
+        peresda
+    peresda
+    dead
+    udos
+        x = (0 - c) / b;
+        output (x);
+    peresda
+peresda
+
+

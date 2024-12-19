@@ -1,11 +1,6 @@
 #ifndef GENERAL_H
 #define GENERAL_H
 
-// tree.h tree.cpp
-// GraphDump.h
-// commands.h
-// ...
-
 enum TypeCommand_t
 {
     NUM = 1,               // CONSTANT
@@ -49,14 +44,14 @@ enum ListCommand_t
     F_CURLY_BRACE_OPEN  = 44,
     F_CURLY_BRACE_CLOSE = 45,
 
-    F_FUNC   = 51,
-    F_INT    = 52,
-    F_DOUBLE = 53,
-    F_PRINT = 55,
+    F_FUNC        = 51,
+    F_INT         = 52,
+    F_DOUBLE      = 53,
+    F_PRINT       = 55,
     F_UNDERLINING = 56,
-    F_INPUT = 57,
-    F_SQRT  = 58,
-    F_PRINT_C = 59
+    F_INPUT       = 57,
+    F_SQRT        = 58,
+    F_PRINT_C     = 59
 };
 
 struct Node_t 

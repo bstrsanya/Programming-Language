@@ -5,10 +5,13 @@
 
 #include "Parser.h"
 
+#define SHIFT_CUR (*pointer)++;
+#define VAL_COM_CUR array[*pointer]->value.com
+
 #define CHECK(val) \
-    if (array[*pointer]->value.com != val) \
+    if (VAL_COM_CUR != val) \
     {\
-        printf ("need [%s] instead of [%s]\n", FindStr (val), FindStr (array[*pointer]->value.com)); \
+        printf ("need [%s] instead of [%s]\n", FindStr (val), FindStr (VAL_COM_CUR)); \
         exit (0); \
     }
 
@@ -35,7 +38,7 @@ Node_t* GetG (int* pointer, Node_t** array)
         printf ("[%d]\n", *pointer);
         assert (0);
     }
-    (*pointer)++;
+    SHIFT_CUR
     return main_node;
 }
 
@@ -47,7 +50,7 @@ void GetProgram (int* pointer, Node_t** array, Node_t* main_value)
         Node_t* block = NodeCtor (BLOCK, 0, value, NULL);
         main_value->right = block;
         main_value = block;
-        (*pointer)++;
+        SHIFT_CUR              // peresda
     }
 }
 
@@ -57,10 +60,10 @@ Node_t* GetDefinitionFunc (int* pointer, Node_t** array)
     Node_t* value = array[*pointer];
     while (array[(*pointer)+1]->value.com == F_BRACE_OPEN)
     {
-        (*pointer)++;
-        (*pointer)++;
-        (*pointer)++;
-        (*pointer)++;
+        SHIFT_CUR              // <name_func>
+        SHIFT_CUR              // (
+        SHIFT_CUR              // )
+        SHIFT_CUR              // udos
         GetStr (pointer, array, value);
     }
     return value;
@@ -68,7 +71,7 @@ Node_t* GetDefinitionFunc (int* pointer, Node_t** array)
 
 void GetStr (int* pointer, Node_t** array, Node_t* main_value)
 {
-    while (array[*pointer]->value.com != F_CURLY_BRACE_CLOSE)
+    while (VAL_COM_CUR != F_CURLY_BRACE_CLOSE)
     {
         Node_t* value = GetVariants (pointer, array);
 
@@ -79,7 +82,7 @@ void GetStr (int* pointer, Node_t** array, Node_t* main_value)
             assert(0);
         }
 
-        if (array[*pointer]->value.com == F_INTERRUPT) (*pointer)++;
+        if (VAL_COM_CUR == F_INTERRUPT) SHIFT_CUR
 
         Node_t* block = NodeCtor (BLOCK, 0, value, NULL);
 
@@ -102,39 +105,39 @@ Node_t* GetVariants (int* pointer, Node_t** array)
 
 Node_t* GetIf (int* pointer, Node_t** array)
 {
-    if (array[*pointer]->value.com == F_IF)
+    if (VAL_COM_CUR == F_IF)
     {
         Node_t* main_node = array[*pointer];
-        (*pointer)++;
+        SHIFT_CUR
 
         CHECK (F_BRACE_OPEN);
-        (*pointer)++;   
+        SHIFT_CUR
 
         Node_t* value1 = GetCompare (pointer, array);
 
         CHECK (F_BRACE_CLOSE);
-        (*pointer)++;                                 
+        SHIFT_CUR                                 
 
         CHECK (F_CURLY_BRACE_OPEN);
-        (*pointer)++;         
+        SHIFT_CUR         
 
         GetStr (pointer, array, main_node);
 
         CHECK (F_CURLY_BRACE_CLOSE);
-        (*pointer)++;                              
+        SHIFT_CUR                              
 
         int n_else = *pointer;
-        if (array[*pointer]->value.com == F_ELSE)
+        if (VAL_COM_CUR == F_ELSE)
         {
-            (*pointer)++;
+            SHIFT_CUR
 
             CHECK (F_CURLY_BRACE_OPEN);
-            (*pointer)++;
+            SHIFT_CUR
 
             GetStr (pointer, array, array[n_else]);
 
             CHECK (F_CURLY_BRACE_CLOSE);
-            (*pointer)++;
+            SHIFT_CUR
         }
 
         if (array[n_else]->right)
@@ -156,26 +159,26 @@ Node_t* GetIf (int* pointer, Node_t** array)
 
 Node_t* GetWhile (int* pointer, Node_t** array)
 {
-    if (array[*pointer]->value.com == F_WHILE)
+    if (VAL_COM_CUR == F_WHILE)
     {
         Node_t* main_node = array[*pointer];
-        (*pointer)++;
+        SHIFT_CUR
 
         CHECK (F_BRACE_OPEN);
-        (*pointer)++;                                
+        SHIFT_CUR                                
 
         Node_t* value1 = GetCompare (pointer, array);
 
         CHECK (F_BRACE_CLOSE);
-        (*pointer)++;       
+        SHIFT_CUR       
 
         CHECK (F_CURLY_BRACE_OPEN);
-        (*pointer)++;                              
+        SHIFT_CUR                              
 
         GetStr (pointer, array, main_node);
 
         CHECK (F_CURLY_BRACE_CLOSE);
-        (*pointer)++;                             
+        SHIFT_CUR                             
 
         main_node->left  = value1;
         return main_node;
@@ -186,16 +189,16 @@ Node_t* GetWhile (int* pointer, Node_t** array)
 
 Node_t* GetFuncCall (int* pointer, Node_t** array)
 {
-    if (array[*pointer]->value.com != F_BRACE_OPEN && array[(*pointer)+1]->value.com == F_BRACE_OPEN)
+    if (VAL_COM_CUR != F_BRACE_OPEN && array[(*pointer)+1]->value.com == F_BRACE_OPEN)
     {
         Node_t* main_node = array[*pointer];
         if (main_node->type == VAR)
             main_node->type = FUNC;
 
-        (*pointer)++;         // <name_func>
-        (*pointer)++;         // F_BRACE_OPEN
+        SHIFT_CUR         // <name_func>
+        SHIFT_CUR         // F_BRACE_OPEN
         
-        if (array[*pointer]->value.com != F_BRACE_CLOSE)
+        if (VAL_COM_CUR != F_BRACE_CLOSE)
         {
             Node_t* node = GetE (pointer, array);
 
@@ -204,7 +207,7 @@ Node_t* GetFuncCall (int* pointer, Node_t** array)
             main_node->right = node;
         }
         
-        (*pointer)++;        // F_BRACE_CLOSE
+        SHIFT_CUR        // F_BRACE_CLOSE
 
         return main_node;
     }
@@ -216,22 +219,22 @@ Node_t* GetAssignment (int* pointer, Node_t** array)
 {
     Node_t* main_node = NULL;
 
-    if (array[*pointer]->value.com == F_INT || array[*pointer]->value.com == F_DOUBLE)
+    if (VAL_COM_CUR == F_INT || VAL_COM_CUR == F_DOUBLE)
     {
         main_node = array[*pointer];
-        (*pointer)++;
+        SHIFT_CUR
     }
 
     Node_t* node_left = GetN (pointer, array);
 
-    if (array[*pointer]->value.com != F_ASSIGNMENT)
+    if (VAL_COM_CUR != F_ASSIGNMENT)
     {
         printf ("YOU MUST INITIALIZE THE VARIABLE\n");
         assert (0);
     }
 
     Node_t* node = array[*pointer];
-    (*pointer)++;
+    SHIFT_CUR
 
     Node_t* node_right = NULL;
 
@@ -255,15 +258,15 @@ Node_t* GetCompare (int* pointer, Node_t** array)
 {
     Node_t* value = GetE (pointer, array);
 
-    if (array[*pointer]->type == OP && (array[*pointer]->value.com == F_JE  ||
-                                        array[*pointer]->value.com == F_JB  ||
-                                        array[*pointer]->value.com == F_JA  ||
-                                        array[*pointer]->value.com == F_JBE ||
-                                        array[*pointer]->value.com == F_JAE ||
-                                        array[*pointer]->value.com == F_JNE ))
+    if (array[*pointer]->type == OP && (VAL_COM_CUR == F_JE  ||
+                                        VAL_COM_CUR == F_JB  ||
+                                        VAL_COM_CUR == F_JA  ||
+                                        VAL_COM_CUR == F_JBE ||
+                                        VAL_COM_CUR == F_JAE ||
+                                        VAL_COM_CUR == F_JNE ))
     {
         int num = *pointer;
-        (*pointer)++;
+        SHIFT_CUR
         Node_t* value2 = GetE (pointer, array);
         array[num]->left = value;
         array[num]->right = value2;
@@ -277,10 +280,10 @@ Node_t* GetE (int* pointer, Node_t** array)
 {
     Node_t* value = GetT (pointer, array);
 
-    while (array[*pointer]->type == OP && (array[*pointer]->value.com == F_ADD || array[*pointer]->value.com == F_SUB))
+    while (array[*pointer]->type == OP && (VAL_COM_CUR == F_ADD || VAL_COM_CUR == F_SUB))
     {
         int num = *pointer;
-        (*pointer)++;
+        SHIFT_CUR
         Node_t* value2 = GetT (pointer, array);
         array[num]->left = value;
         array[num]->right = value2;
@@ -294,10 +297,10 @@ Node_t* GetT (int* pointer, Node_t** array)
 {
     Node_t* value = GetP (pointer, array);
 
-    while (array[*pointer]->type == OP && (array[*pointer]->value.com == F_MUL || array[*pointer]->value.com == F_DIV))
+    while (array[*pointer]->type == OP && (VAL_COM_CUR == F_MUL || VAL_COM_CUR == F_DIV))
     {
         int num = *pointer;
-        (*pointer)++;
+        SHIFT_CUR
         Node_t* value2 = GetP (pointer, array);
         array[num]->left = value;
         array[num]->right = value2;
@@ -309,13 +312,13 @@ Node_t* GetT (int* pointer, Node_t** array)
 
 Node_t* GetP (int* pointer, Node_t** array)
 {
-    if (array[*pointer]->type == OP && array[*pointer]->value.com == F_BRACE_OPEN)
+    if (array[*pointer]->type == OP && VAL_COM_CUR == F_BRACE_OPEN)
     {
-        (*pointer)++;
+        SHIFT_CUR
         Node_t* value = GetE (pointer, array);
 
         CHECK (F_BRACE_CLOSE);
-        (*pointer)++;
+        SHIFT_CUR
 
         return value;
     }
@@ -331,14 +334,6 @@ Node_t* GetN (int* pointer, Node_t** array)
         assert (0);
     }
 
-    (*pointer)++;
+    SHIFT_CUR
     return array[(*pointer)-1];
 }
-
-
-
-
-
-
-
-
