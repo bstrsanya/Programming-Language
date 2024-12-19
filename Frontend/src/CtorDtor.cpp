@@ -51,7 +51,7 @@ void TreeCtor (Tree_t* tree, const char* name_file_input, const char* name_file_
     for (int i = 0; i < SIZE_TABLE_VAR; i++)
         table[i] = NULL;
 
-    char* array = (char*) calloc (1000, sizeof (char));
+    char* array = (char*) calloc (SIZE_ARRAY, sizeof (char));
     assert (array);
 
     tree->read_data = array;
@@ -71,8 +71,8 @@ void TreeDtor (Tree_t* tree)
 
     for (int i = 0; i < SIZE_ARRAY; i++)
         free (tree->array[i]);
+
     free (tree->array);
-    NodeDtor (tree->expression_diff);
 
     free (tree->table_var);
     free (tree->read_data);
@@ -134,7 +134,12 @@ void PrintTxt (Node_t* node, Tree_t* tree)
         }
         case OP:
         {
-            if (node->value.com != F_PRINT && node->value.com != F_INT && node->value.com != F_DOUBLE && node->value.com != F_INPUT && node->value.com != F_SQRT)
+            if (node->value.com != F_PRINT  && 
+                node->value.com != F_INT    && 
+                node->value.com != F_DOUBLE && 
+                node->value.com != F_INPUT  && 
+                node->value.com != F_SQRT   &&
+                node->value.com != F_PRINT_C )
             {
                 fprintf (tree->output, "(3 %d ", node->value.com);
                 PrintTxt (node->left, tree);

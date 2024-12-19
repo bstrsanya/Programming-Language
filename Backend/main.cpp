@@ -10,8 +10,8 @@ int main (int argc, const char *argv[])
     TreeCtor (&tree, argv[1], argv[2]);
 
     PrintDot (tree.expression, "backend.png", &tree);
-    fprintf (tree.output, "CALL main:\nHLT\n");
-    CreateAsmFile (tree.expression, &tree);
+    
+    CreateAsmFile (&tree);
 
     TreeDtor (&tree);
 

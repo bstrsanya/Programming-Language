@@ -16,21 +16,10 @@ void ReadDataBase (Tree_t* tree)
     tree->array = CreateArrayTokens ();
     Tokenization (tree, buffer);
 
-
-    // for (int i = 0; i < 20; i++)
-    // {
-    //     if (tree->array[i]->type == NUM)
-    //         printf ("[%d]: type [%d], value [%g]\n", i, tree->array[i]->type, tree->array[i]->value.number);
-    //     else if (tree->array[i]->type == VAR)
-    //         printf ("[%d]: type [%d], value [%d]\n", i, tree->array[i]->type, tree->array[i]->value.var);
-    //     else
-    //         printf ("[%d]: type [%d], value [%d]\n", i, tree->array[i]->type, tree->array[i]->value.com);
-    // }
-
-
     // recursive descent
     int pointer = 0;
     tree->expression = GetG (&pointer, tree->array);
+
     free (buffer);
 }
 
@@ -56,7 +45,7 @@ Node_t** CreateArrayTokens ()
 void Tokenization (Tree_t* tree, char* buffer)
 {
     Node_t** array = tree->array;
-    int y = 0;
+    int n_node = 0;
 
     int position = 0;    
 
@@ -65,67 +54,45 @@ void Tokenization (Tree_t* tree, char* buffer)
         while (buffer[position] == ' ' || buffer[position] == '\n')
             position++;
 
-        if (('0' <= buffer[position]) && (buffer[position] <= '9'))
+        if (isdigit (buffer[position]))
         {            
             double d = 0;
             int n = 0;
             sscanf (buffer + position, "%lf%n", &d, &n);
             position += n;
-            array[y]->type = NUM;
-            array[y]->value.number = d;
-            y++;
+            array[n_node]->type = NUM;
+            array[n_node]->value.number = d;
+            n_node++;
         }
-        else if (isalpha (buffer[position]))
-        {
-            int n = 0;
-            sscanf (buffer + position, "%*[a-zA-Z123456789_]%n", &n);
 
-            char* str = CreateStr (buffer + position, n, tree);
-            TypeCommand_t com_type = INVALID_TYPE;
-            int com_value = 0;
-            FindCommand (str, &com_type, &com_value, tree);
-
-            array[y]->type = (TypeCommand_t) com_type;
-
-            if (com_type == VAR)
-                array[y]->value.var = com_value;
-            else
-                array[y]->value.com = (ListCommand_t) com_value;
-
-            y++;
-            position += n;
-        }
         else 
         {
             int n = 0;
-            sscanf (buffer + position, "%*[+-*/^{};_]%n", &n);
-            if (!n)
+            if (!n) sscanf (buffer + position, "%*[a-zA-Z1234567890_]%n", &n);
+            if (!n) sscanf (buffer + position, "%*[+-*/^;_]%n", &n);
+            if (!n) sscanf (buffer + position, "%*[=><!]%n", &n);
+            if (!n) sscanf (buffer + position, "%*1[()]%n", &n);
+
+            if (n)
             {
-                sscanf (buffer + position, "%*[=><!]%n", &n);
+                char* str = CreateStr (buffer + position, n, tree);
+                TypeCommand_t com_type = INVALID_TYPE;
+                int com_value = 0;
+                FindCommand (str, &com_type, &com_value, tree);
+
+                array[n_node]->type = (TypeCommand_t) com_type;
+
+                if (com_type == VAR)
+                    array[n_node]->value.var = com_value;
+                else
+                    array[n_node]->value.com = (ListCommand_t) com_value;
+
+                n_node++;
+                position += n;
             }
-            if (!n)
-            {
-                if (buffer[position] == '(' || buffer[position] == ')')
-                    n = 1;
-            }
-            if (n) {
-            char* str = CreateStr (buffer + position, n, tree);
-            TypeCommand_t com_type = INVALID_TYPE;
-            int com_value = 0;
-            FindCommand (str, &com_type, &com_value, tree);
-
-            array[y]->type = (TypeCommand_t) com_type;
-
-            if (com_type == VAR)
-                array[y]->value.var = com_value;
-            else
-                array[y]->value.com = (ListCommand_t) com_value;
-
-            y++;
-            position += n; }
         }
     }
-    array[y]->value.var = '$';
+    array[n_node]->value.var = '$';
 }
 
 char* CreateStr (char* main_str, int len, Tree_t* tree)

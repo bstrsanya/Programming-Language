@@ -17,14 +17,17 @@ II = -I ./lib/include -I ./Backend/include -I ./General
 
 all: backend
 
-backend: ./Backend/obj/main.o ./Backend/obj/ReadFile.o ./Backend/obj/SizeFile.o ./Backend/obj/GraphDump.o ./Backend/obj/Recovery.o
-	g++ ./Backend/obj/main.o ./Backend/obj/ReadFile.o ./Backend/obj/SizeFile.o ./Backend/obj/GraphDump.o ./Backend/obj/Recovery.o ${FLAGS} -o backend
+backend: ./Backend/obj/main.o ./Backend/obj/ReadFile.o ./Backend/obj/SizeFile.o ./Backend/obj/GraphDump.o ./Backend/obj/Recovery.o ./Backend/obj/CreateAsm.o
+	g++ ./Backend/obj/main.o ./Backend/obj/ReadFile.o ./Backend/obj/SizeFile.o ./Backend/obj/GraphDump.o ./Backend/obj/Recovery.o ./Backend/obj/CreateAsm.o ${FLAGS} -o backend
 
 ./Backend/obj/main.o: ./Backend/main.cpp
 	$(CC) $(II) $(FLAGS) -c ./Backend/main.cpp -o ./Backend/obj/main.o
 
 ./Backend/obj/Recovery.o: ./Backend/src/Recovery.cpp
 	$(CC) $(II) $(FLAGS) -c ./Backend/src/Recovery.cpp -o ./Backend/obj/Recovery.o
+
+./Backend/obj/CreateAsm.o: ./Backend/src/CreateAsm.cpp
+	$(CC) $(II) $(FLAGS) -c ./Backend/src/CreateAsm.cpp -o ./Backend/obj/CreateAsm.o
 
 ./Backend/obj/ReadFile.o: ./lib/src/ReadFile.cpp
 	$(CC) $(II) $(FLAGS) -c ./lib/src/ReadFile.cpp -o ./Backend/obj/ReadFile.o

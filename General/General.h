@@ -55,7 +55,8 @@ enum ListCommand_t
     F_PRINT = 55,
     F_UNDERLINING = 56,
     F_INPUT = 57,
-    F_SQRT  = 58
+    F_SQRT  = 58,
+    F_PRINT_C = 59
 };
 
 struct Node_t 
@@ -75,7 +76,6 @@ struct Node_t
 struct Tree_t
 {
     Node_t* expression;
-    Node_t* expression_diff;
     FILE* output;
     FILE* input;
     Node_t** array;
@@ -91,37 +91,39 @@ struct Command_t
 
 
 constexpr Command_t array_command[] = {
-    {"cos"   , F_COS},
-    {"sin"   , F_SIN},
-    {"tg"    , F_TAN},
-    {"ctg"   , F_CTG},
-    {"ln"    , F_LN},
-    {"+"     , F_ADD},
-    {"-"     , F_SUB},
-    {"*"     , F_MUL},
-    {"/"     , F_DIV},
-    {"^"     , F_DEG},
-    {"("     , F_BRACE_OPEN},
-    {")"     , F_BRACE_CLOSE},
-    {"="     , F_ASSIGNMENT},
-    {"if"    , F_IF},
-    {"{"     , F_CURLY_BRACE_OPEN},
-    {"}"     , F_CURLY_BRACE_CLOSE},
-    {";"     , F_INTERRUPT},
-    {"=="    , F_JE},
-    {"else"  , F_ELSE},
-    {"while" , F_WHILE},
-    {"<"     , F_JB},
-    {"<="    , F_JBE},
-    {">"     , F_JA},
-    {">="    , F_JAE},
-    {"!="    , F_JNE},
-    {"int"   , F_INT},
-    {"double", F_DOUBLE},
-    {"output", F_PRINT},
-    {"_"     , F_UNDERLINING},
-    {"input" , F_INPUT},
-    {"sqrt"  , F_SQRT}
+    {"invalid com", F_INVALID},
+    {"cos"        , F_COS},
+    {"sin"        , F_SIN},
+    {"tg"         , F_TAN},
+    {"ctg"        , F_CTG},
+    {"ln"         , F_LN},
+    {"+"          , F_ADD},
+    {"-"          , F_SUB},
+    {"*"          , F_MUL},
+    {"/"          , F_DIV},
+    {"^"          , F_DEG},
+    {"("          , F_BRACE_OPEN},
+    {")"          , F_BRACE_CLOSE},
+    {"="          , F_ASSIGNMENT},
+    {"if_alive"   , F_IF},
+    {"udos"       , F_CURLY_BRACE_OPEN},
+    {"peresda"    , F_CURLY_BRACE_CLOSE},
+    {";"          , F_INTERRUPT},
+    {"=="         , F_JE},
+    {"dead"       , F_ELSE},
+    {"when_good"  , F_WHILE},
+    {"<"          , F_JB},
+    {"<="         , F_JBE},
+    {">"          , F_JA},
+    {">="         , F_JAE},
+    {"!="         , F_JNE},
+    {"int"        , F_INT},
+    {"double"     , F_DOUBLE},
+    {"output"     , F_PRINT},
+    {"_"          , F_UNDERLINING},
+    {"input"      , F_INPUT},
+    {"sqrt"       , F_SQRT},
+    {"symbol"     , F_PRINT_C}
 };
 
 const int NUM_COMMAND = sizeof (array_command) / sizeof (array_command[0]);
