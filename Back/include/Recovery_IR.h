@@ -15,8 +15,8 @@ void ReadDataBase (Tree_t* tree);
 Node_t** CreateArrayTokens ();
 void ReadBuffer (Tree_t* tree);
 Node_t* RecoveryTree (int* pointer, Node_t** array);
-void WritingAsmFile (Node_t* node, Tree_t* tree);
+void WritingIR (Node_t* node, Tree_t* tree);
 void ChangeSign (Node_t* node, Tree_t* tree);
-void CreateAsmFile (Tree_t* tree);
+void CreateIR (Tree_t* tree);
 
 #endif

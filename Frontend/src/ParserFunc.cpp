@@ -62,11 +62,34 @@ Node_t* GetDefinitionFunc (int* pointer, Node_t** array)
     {
         SHIFT_CUR              // <name_func>
         SHIFT_CUR              // (
+        GetArgFunc (pointer, array, value);
         SHIFT_CUR              // )
         SHIFT_CUR              // udos
         GetStr (pointer, array, value);
     }
     return value;
+}
+
+void GetArgFunc (int* pointer, Node_t** array, Node_t* main_value)
+{
+    while (VAL_COM_CUR != F_BRACE_CLOSE)
+    {
+        Node_t* value = GetN (pointer, array);
+
+        // if (array[(*pointer) - 1]->value.com != F_CURLY_BRACE_CLOSE &&
+        //     array[(*pointer)]->value.com != ',' )
+        // {
+        //     printf ("need [,]\n");
+        //     assert(0);
+        // }
+
+        if (VAL_COM_CUR == F_INTERRUPT) SHIFT_CUR
+
+        Node_t* block = NodeCtor (BLOCK, 0, NULL, value);
+
+        main_value->left = block;
+        main_value = block;
+    }
 }
 
 void GetStr (int* pointer, Node_t** array, Node_t* main_value)
@@ -78,7 +101,7 @@ void GetStr (int* pointer, Node_t** array, Node_t* main_value)
         if (array[(*pointer) - 1]->value.com != F_CURLY_BRACE_CLOSE &&
             array[(*pointer)]->value.com != F_INTERRUPT )
         {
-            printf ("need [;]\n");
+            printf ("need [;] %d %d\n", array[(*pointer) - 1]->value.com, array[(*pointer)]->value.com);
             assert(0);
         }
 
@@ -98,9 +121,27 @@ Node_t* GetVariants (int* pointer, Node_t** array)
     if ((node = GetIf         (pointer, array))) return node;
     if ((node = GetWhile      (pointer, array))) return node;
     if ((node = GetFuncCall   (pointer, array))) return node;
+    if ((node = GetReturn     (pointer, array))) return node;
     if ((node = GetAssignment (pointer, array))) return node;
 
     return NULL; 
+}
+
+Node_t* GetReturn (int* pointer, Node_t** array)
+{
+    if (VAL_COM_CUR == F_RETURN)
+    {
+        Node_t* main_node = array[*pointer];
+        SHIFT_CUR
+
+        Node_t* value = GetE (pointer, array);
+
+        main_node->right = value;
+
+        return main_node;
+    }
+
+    return NULL;
 }
 
 Node_t* GetIf (int* pointer, Node_t** array)
@@ -198,13 +239,28 @@ Node_t* GetFuncCall (int* pointer, Node_t** array)
         SHIFT_CUR         // <name_func>
         SHIFT_CUR         // F_BRACE_OPEN
         
-        if (VAL_COM_CUR != F_BRACE_CLOSE)
+        if (main_node->value.com == F_INPUT || main_node->value.com == F_PRINT)
         {
             Node_t* node = GetE (pointer, array);
 
             CHECK (F_BRACE_CLOSE);
 
             main_node->right = node;
+        }
+        else
+        {
+            Node_t* copy = main_node;
+            while (VAL_COM_CUR != F_BRACE_CLOSE)
+            {
+                Node_t* value = GetE (pointer, array);
+
+                if (VAL_COM_CUR == F_INTERRUPT) SHIFT_CUR
+
+                Node_t* block = NodeCtor (BLOCK, 0, value, NULL);
+
+                copy->right = block;
+                copy = block;
+            }
         }
         
         SHIFT_CUR        // F_BRACE_CLOSE
@@ -328,6 +384,11 @@ Node_t* GetP (int* pointer, Node_t** array)
 
 Node_t* GetN (int* pointer, Node_t** array)
 {
+    Node_t* node = GetFuncCall (pointer, array);
+    if (node)
+    {
+        return node;
+    }
     if (array[*pointer]->type != NUM && array[*pointer]->type != VAR)
     {
         printf ("need num or var\n");

@@ -4,8 +4,6 @@
 
 #include "Parser.h"
 
-
-
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right)
 {
     Node_t* new_node = (Node_t*) calloc (1, sizeof (Node_t));
@@ -139,7 +137,8 @@ void PrintTxt (Node_t* node, Tree_t* tree)
                 node->value.com != F_DOUBLE && 
                 node->value.com != F_INPUT  && 
                 node->value.com != F_SQRT   &&
-                node->value.com != F_PRINT_C )
+                node->value.com != F_PRINT_C &&
+                node->value.com != F_RETURN)
             {
                 fprintf (tree->output, "(3 %d ", node->value.com);
                 PrintTxt (node->left, tree);

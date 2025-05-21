@@ -5,7 +5,7 @@
 #include <math.h>
 #include <ctype.h>
 
-#include "Recovery.h"
+#include "Recovery_IR.h"
 
 void TreeCtor (Tree_t* tree, const char* name_file_input, const char* name_file_output)
 {
@@ -157,8 +157,9 @@ void ReadBuffer (Tree_t* tree)
             position++;
         
         int n = 0;
-        sscanf (buffer + position, "%*[a-zA-Z]%n", &n);
+        sscanf (buffer + position, "%*[a-zA-Z-]%n", &n);
         buffer[position + n] = '\0';
+        // printf ("{%s}\n", buffer + position);
 
         int i = 0;
         while (tree->table_var[i])
@@ -187,7 +188,6 @@ Node_t* RecoveryTree (int* pointer, Node_t** array)
             node->value.number = array[*pointer]->value.number;
         else if (node->type == VAR || node->type == FUNC)
         {
-            // printf ("aaaaaaaaaaaaaaaaa\n");
             node->value.var = (int) array[*pointer]->value.number;
         }
         else if (node->type == OP || node->type == BLOCK)

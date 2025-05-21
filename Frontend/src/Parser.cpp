@@ -16,6 +16,11 @@ void ReadDataBase (Tree_t* tree)
     tree->array = CreateArrayTokens ();
     Tokenization (tree, buffer);
 
+    // for (int i = 0; i < 10; i++)
+    // {
+    //     printf ("type: %d; com: %d; number: %.2lf; var: %d.\n", tree->array[i]->type, tree->array[i]->value.com, tree->array[i]->value.number, tree->array[i]->value.var);
+    // }
+
     // recursive descent
     int pointer = 0;
     tree->expression = GetG (&pointer, tree->array);
@@ -41,6 +46,10 @@ Node_t** CreateArrayTokens ()
 
     return array;
 }
+
+int HAS_OPEN_BRACE = 0;
+int HAS_OPEN_BRACE_2 = 0;
+int I_GLOBAL = 0;
 
 void Tokenization (Tree_t* tree, char* buffer)
 {
@@ -110,13 +119,42 @@ void FindCommand (char* com, TypeCommand_t* com_type, int* com_value, Tree_t* tr
         if (!strcmp (array_command[i].name, com))
         {
             *com_type = OP;
+            if (array_command[i].n_com == F_CURLY_BRACE_OPEN)
+            {
+                HAS_OPEN_BRACE += 1;
+            }
+            if (array_command[i].n_com == F_CURLY_BRACE_CLOSE)
+            {
+                HAS_OPEN_BRACE -= 1;
+            }
             *com_value = array_command[i].n_com;
         }
     }
     if (!(*com_value))
     {
+        // printf ("[%s]\n", com);
+
+        if (HAS_OPEN_BRACE == 0 && HAS_OPEN_BRACE_2 == 0)
+        {
+            HAS_OPEN_BRACE_2 = 1;
+            for (int j = 0; j < SIZE_TABLE_VAR; j++)
+            {
+                if (!tree->table_var[j])
+                {
+                    I_GLOBAL = j;
+                    // printf ("I_GLOBAL = %d\n", I_GLOBAL);
+                    tree->table_var[j] = "-----NEWFUNC-----";
+                    I_GLOBAL++;
+                    break;
+                }
+            }
+        }
+        if (HAS_OPEN_BRACE != 0)
+        {
+            HAS_OPEN_BRACE_2 = 0;
+        } 
         *com_type = VAR;
-        for (int i = 0; i < SIZE_TABLE_VAR; i++)
+        for (int i = I_GLOBAL; i < SIZE_TABLE_VAR; i++)
         {
             if (!tree->table_var[i])
             {

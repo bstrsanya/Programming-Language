@@ -1,19 +1,17 @@
-main () 
+main ()
 udos
-    int factorial = 1;
-    int counter = 1;
-    int value = 0;
-    input (value);
-    fact (); 
-    output (factorial);
+    int a = 0;
+    input (a);
+    int c = fact (a);
+    output (c);
 peresda
 
-fact () 
+fact (n)
 udos
-    when_good (counter <= value) 
+    if_alive (n > 1)
     udos
-        factorial = factorial * counter;
-        counter = counter + 1;
+        return n * fact (n - 1);
     peresda
-peresda
 
+    return 1;
+peresda

@@ -17,6 +17,10 @@ void CreateAsmFile (Tree_t* tree)
     WritingAsmFile (tree->expression, tree);
 }
 
+int IN_FUNC = 1;
+int IN_ARG_FUNC = 1;
+int IN_RETURN = 0;
+
 void WritingAsmFile (Node_t* node, Tree_t* tree)
 {
     assert (node);
@@ -31,15 +35,35 @@ void WritingAsmFile (Node_t* node, Tree_t* tree)
         }
         case FUNC:
         {
-            if (!node->left && !node->right)
-            {
+            if (IN_FUNC == 0)
+            {   
+                
+                int i = node->value.var + 1;
+                while (tree->table_var[i])
+                {
+                    fprintf (tree->output, "PUSH [%d]\n", i);
+                    i++;
+                }
+                
+                if (node->left) WritingAsmFile (node->left, tree);
+                if (node->right) WritingAsmFile (node->right, tree);
                 fprintf (tree->output, "CALL %s:\n", tree->table_var[node->value.var]);
+                i--;
+                while (i > node->value.var)
+                {
+                    fprintf (tree->output, "POP [%d]\n", i);
+                    i--;
+                }
             }
             else
             {
                 fprintf (tree->output, "%s:\n", tree->table_var[node->value.var]);
+                IN_FUNC = 0;
+                IN_ARG_FUNC = 0;
                 if (node->left) WritingAsmFile (node->left, tree);
+                IN_ARG_FUNC = 1;
                 if (node->right) WritingAsmFile (node->right, tree);
+                IN_FUNC = 1;
                 fprintf (tree->output, "RET\n");
             }
             break;
@@ -51,7 +75,10 @@ void WritingAsmFile (Node_t* node, Tree_t* tree)
         }
         case VAR:
         {
-            fprintf (tree->output, "PUSH [%d]\n", node->value.var);
+            if (IN_ARG_FUNC == 0)
+                fprintf (tree->output, "POP [%d]\n", node->value.var);
+            else
+                fprintf (tree->output, "PUSH [%d]\n", node->value.var);
             break;
         }
         case BLOCK:
@@ -79,6 +106,10 @@ void WritingAsmFile (Node_t* node, Tree_t* tree)
                 case F_ASSIGNMENT:
                 {
                     WritingAsmFile (node->right, tree);
+                    if (node->right->type == FUNC)
+                    {
+                        fprintf (tree->output, "PUSH AX\n");
+                    }
                     fprintf (tree->output, "POP [%d]\n", node->left->value.var);
                     break;
                 }
@@ -100,6 +131,10 @@ void WritingAsmFile (Node_t* node, Tree_t* tree)
                 {
                     WritingAsmFile (node->left, tree);
                     WritingAsmFile (node->right, tree);
+
+                    if (node->right->type == FUNC)
+                        fprintf (tree->output, "PUSH AX\n");
+
                     fprintf (tree->output, "MUL\n");
                     break;
                 }
@@ -162,6 +197,13 @@ void WritingAsmFile (Node_t* node, Tree_t* tree)
                 {
                     WritingAsmFile (node->right, tree);
                     fprintf (tree->output, "SQRT\n");
+                    break;
+                }
+                case F_RETURN:
+                {
+                    WritingAsmFile (node->right, tree);
+                    fprintf (tree->output, "POP AX\n");
+                    fprintf (tree->output, "RET\n");
                     break;
                 }
                 default:

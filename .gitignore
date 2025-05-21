@@ -7,3 +7,6 @@ frontend
 *.bin
 Processor
 .vscode
+x
+new_asm.s
+main.c

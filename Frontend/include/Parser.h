@@ -26,6 +26,8 @@ Node_t* GetAssignment (int* pointer, Node_t** array);
 Node_t* GetFuncCall (int* pointer, Node_t** array);
 void GetProgram (int* pointer, Node_t** array, Node_t* main_value);
 Node_t* GetVariants (int* pointer, Node_t** array);
+void GetArgFunc (int* pointer, Node_t** array, Node_t* main_value);
+Node_t* GetReturn (int* pointer, Node_t** array);
 
 Node_t** CreateArrayTokens ();
 

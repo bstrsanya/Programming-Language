@@ -15,15 +15,15 @@ udos
 
     if_alive (a != 0)
     udos
-        SquareEqu ();
+        SquareEqu (a; b; c; x; y; D);
     peresda
     dead
     udos
-        NoSquareEqu ();
+        NoSquareEqu (a; b; c; x; y; D);
     peresda
 peresda
 
-SquareEqu () 
+SquareEqu (a; b; c; x; y; D) 
 udos
     if_alive (D == 0)
     udos
@@ -52,7 +52,7 @@ udos
     peresda
 peresda
 
-NoSquareEqu () 
+NoSquareEqu (a; b; c; x; y; D) 
 udos
     if_alive (b == 0)
     udos

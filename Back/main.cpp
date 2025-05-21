@@ -1,18 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "Recovery.h"
+#include "Recovery_IR.h"
 
 int main (int argc, const char *argv[])
 {
-    //TODO: check args
+    // TODO: check args
     Tree_t tree = {};
     TreeCtor (&tree, argv[1], argv[2]);
-
-    PrintDot (tree.expression, "backend.png", &tree);
-
-    CreateAsmFile (&tree);
-
+    CreateIR (&tree);
     TreeDtor (&tree);
 
     return 0;
