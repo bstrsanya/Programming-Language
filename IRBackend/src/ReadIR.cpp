@@ -33,6 +33,8 @@ void ListIRCtor (ListIR_t* list_ir, const char* name_file_input, const char* nam
 
     list_ir->name_output_file = name_file_output;
 
+    CopyLib (list_ir, "lib_compiler");
+
     ReadFileIR (list_ir);
     fclose (list_ir->input);
 
@@ -46,6 +48,7 @@ void ListIRDtor (ListIR_t* list_ir)
     free (list_ir->data);
     free (list_ir->list);
     free (list_ir->byte);
+    free (list_ir->asm_code);
     
     if (list_ir->output)
         fclose (list_ir->output);

@@ -1,5 +1,115 @@
 # Language
 
+## Пример компиляции программы.
+
+### Исходный код
+
+```
+main ()
+udos
+    int num = 0;
+    input (num);
+    int result = fact (num);
+    output (result);
+peresda
+
+fact (n)
+udos
+    if_alive (n > 1)
+    udos
+        return n * fact (n - 1);
+    peresda
+
+    return 1;
+peresda
+```
+
+### Абстрактное синтаксическое дерево
+<img src="img/factorial_ast.png" width=70%/>
+
+Рис. 1. Абстрактное синтаксическое дерево.
+
+### Текстовый формат абстрактного синтаксического дерева
+<img src="img/factorial_ast_text.png" width=60%/>
+
+Рис. 2. Текстовый формат абстрактного синтаксического дерева.
+
+### Промежуточное представление
+<img src="img/IR.png" width=60%/>
+
+Рис. 3. Промежуточное представление.
+
+### Трансляция в NASM
+<img src="img/nasm.png" width=25%/>
+
+Рис. 4. Ассемблерный код.
+
+### Трансляция в Elf64
+<img src="img/elf.png" width=80%/>
+
+Рис. 5. Исполняемый файл.
+
+## Сравнение с компилятором gcc
+
+Программа, на которой проводились сравнения. (Без использования функций printf, scanf, для более точного измерения).
+
+```
+main () 
+udos
+    int num = 40;
+    int result = fib (num); 
+peresda
+
+fib (n) 
+udos
+    if_alive (n == 0)
+    udos
+        return 0;
+    peresda
+
+    dead 
+    udos 
+        if_alive (n == 1)
+        udos
+            return 1;
+        peresda
+        
+        dead
+        udos
+            int c = fib (n - 1);
+            int d = fib (n - 2);
+            return c + d;
+        peresda
+    peresda
+peresda
+
+```
+
+| | Время, с |
+| :-: | :-: |
+|gcc -O0| 1,111 |
+|my_elf|  1,493 |
+|nasm | 1,493 |
+|gcc -O3| 0,304 |
+
+<img src="img/main.png" width=70%/>
+
+Рис. 6. gcc с флагом -O0.
+
+<img src="img/my_elf.png" width=70%/>
+
+Рис. 7. Исполняемый файл.
+
+<img src="img/nasm_elf.png" width=70%/>
+
+Рис. 8. Ассемблерный файл.
+
+<img src="img/main2.png" width=70%/>
+
+Рис. 9. gcc с флагом -O3.
+
+<details>
+<summary>.</summary>
 Project of translation system - from my language to assembler 
 
 > [!Important]
@@ -80,3 +190,4 @@ udos
     peresda
 peresda
 ```
+</details>

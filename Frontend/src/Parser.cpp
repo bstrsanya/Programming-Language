@@ -48,7 +48,6 @@ Node_t** CreateArrayTokens ()
 }
 
 int HAS_OPEN_BRACE = 0;
-int HAS_OPEN_BRACE_2 = 0;
 int I_GLOBAL = 0;
 
 void Tokenization (Tree_t* tree, char* buffer)
@@ -119,11 +118,13 @@ void FindCommand (char* com, TypeCommand_t* com_type, int* com_value, Tree_t* tr
         if (!strcmp (array_command[i].name, com))
         {
             *com_type = OP;
-            if (array_command[i].n_com == F_CURLY_BRACE_OPEN)
+            if (array_command[i].n_com == F_CURLY_BRACE_OPEN ||
+                array_command[i].n_com == F_BRACE_OPEN)
             {
                 HAS_OPEN_BRACE += 1;
             }
-            if (array_command[i].n_com == F_CURLY_BRACE_CLOSE)
+            if (array_command[i].n_com == F_CURLY_BRACE_CLOSE ||
+                array_command[i].n_com == F_BRACE_CLOSE)
             {
                 HAS_OPEN_BRACE -= 1;
             }
@@ -133,10 +134,9 @@ void FindCommand (char* com, TypeCommand_t* com_type, int* com_value, Tree_t* tr
     if (!(*com_value))
     {
         // printf ("[%s]\n", com);
-
-        if (HAS_OPEN_BRACE == 0 && HAS_OPEN_BRACE_2 == 0)
+        // printf ("[%s] [%d] [%d]\n", com, HAS_OPEN_BRACE, HAS_OPEN_BRACE_2);
+        if (HAS_OPEN_BRACE == 0)
         {
-            HAS_OPEN_BRACE_2 = 1;
             for (int j = 0; j < SIZE_TABLE_VAR; j++)
             {
                 if (!tree->table_var[j])
@@ -149,10 +149,6 @@ void FindCommand (char* com, TypeCommand_t* com_type, int* com_value, Tree_t* tr
                 }
             }
         }
-        if (HAS_OPEN_BRACE != 0)
-        {
-            HAS_OPEN_BRACE_2 = 0;
-        } 
         *com_type = VAR;
         for (int i = I_GLOBAL; i < SIZE_TABLE_VAR; i++)
         {

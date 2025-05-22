@@ -15,6 +15,9 @@ void WriteNasm (ListIR_t* list)
     fprintf (file_1, "%%include \"func_lib.s\"\n");
     Node_IR* array = list->list;
 
+    int PARAM = 1;
+    int ARG_IN_FUNC = 2;
+
     for (int i = 0; i < list->size_list; i++)
     {
         switch (array[i].num)
@@ -55,7 +58,12 @@ void WriteNasm (ListIR_t* list)
             {
                 fprintf (file_1, "\n; GET_ARG\n");
                 fprintf (file_1, "mov rbx, [rbp + 8 * %d]\n"
-                                 "mov [rbp - 8 * %d], rbx\n" , array[i].arg2.num_int + 1, array[i].arg2.num_int);
+                                 "mov [rbp - 8 * %d], rbx\n" , ARG_IN_FUNC, array[i].arg2.num_int);
+
+                if (array[i + 1].num == IR_GET_ARG)
+                    ARG_IN_FUNC++;
+                else
+                    ARG_IN_FUNC = 2;
                 break;
             }
             case IR_MOV:
@@ -67,8 +75,6 @@ void WriteNasm (ListIR_t* list)
                         fprintf (file_1, "pop qword [rbp - 8 * %d]\n", array[i].arg2.num_int);
                     else if (array[i].arg2.reg == 1)
                         fprintf (file_1, "pop rax\n");
-                    else
-                        printf ("HEEEEEElP %d\n", __LINE__);
                 }
                 else if (array[i].arg1.reg == 1)
                 {
@@ -76,8 +82,6 @@ void WriteNasm (ListIR_t* list)
                         fprintf (file_1, "mov [rbp - 8 * %d], rax\n", array[i].arg2.num_int);
                     else if (array[i].arg2.stack == 1)
                         fprintf (file_1, "push rax\n");
-                    else
-                        printf ("HEEEEEElP %d\n", __LINE__);
                 }
                 else if (array[i].arg1.memory == 1)
                 {
@@ -85,8 +89,6 @@ void WriteNasm (ListIR_t* list)
                         fprintf (file_1, "mov rax, [rbp - 8 * %d]\n", array[i].arg1.num_int);
                     else if (array[i].arg2.stack == 1)
                         fprintf (file_1, "push qword [rbp - 8 * %d]\n", array[i].arg1.num_int);
-                    else
-                        printf ("HEEEEEEEEEEEEEELP %d\n", __LINE__);
                 }
                 else
                 {
@@ -96,8 +98,6 @@ void WriteNasm (ListIR_t* list)
                         fprintf (file_1, "push %d\n", array[i].arg1.num_int);
                     else if (array[i].arg2.memory == 1)
                         fprintf (file_1, "mov [rbp - 8 * %d], %d\n", array[i].arg2.num_int, array[i].arg1.num_int);
-                    else
-                        printf ("HEEEEEEELP %d\n", __LINE__);
                 }
                 break;
             }
@@ -114,13 +114,13 @@ void WriteNasm (ListIR_t* list)
                 fprintf (file_1, "\n; JMP\n");
 
                 if (array[i].arg1.num_int == JA)
-                    fprintf (file_1, "ja ");
+                    fprintf (file_1, "jg "); // ja
                 else if (array[i].arg1.num_int == JAE)
-                    fprintf (file_1, "jae ");
+                    fprintf (file_1, "jge "); // jae
                 else if (array[i].arg1.num_int == JB)
-                    fprintf (file_1, "jb ");
+                    fprintf (file_1, "jle "); // jbe
                 else if (array[i].arg1.num_int == JBE)
-                    fprintf (file_1, "jb ");
+                    fprintf (file_1, "jl ");  // jb
                 else if (array[i].arg1.num_int == JNE)
                     fprintf (file_1, "jne ");
                 else if (array[i].arg1.num_int == JE)
@@ -143,6 +143,12 @@ void WriteNasm (ListIR_t* list)
                     fprintf (file_1, "sub rbx, rcx\n");
                 else if (array[i].arg1.num_int == OP_MUL)
                     fprintf (file_1, "imul rbx, rcx\n");
+                else if (array[i].arg1.num_int == OP_DIV)
+                    fprintf (file_1, "mov rax, rbx\n"
+                                     "xor rdx, rdx\n"
+                                     "dec rdx\n"
+                                     "idiv rcx\n"
+                                     "mov rbx, rax\n");
 
                 fprintf (file_1, "push rbx\n");
                 break;
@@ -157,12 +163,15 @@ void WriteNasm (ListIR_t* list)
             {
                 fprintf (file_1, "\n; PUT_ARG_FUNC\n");
                 fprintf (file_1, "push qword [rbp - 8 * %d]\n", array[i].arg1.num_int);
+                if (array[i + 1].num == IR_PUT_ARG_FUNC)
+                    PARAM++;
                 break;
             }
             case IR_FREE_ARG:
             {
                 fprintf (file_1, "\n; FREE_ARG\n");
-                fprintf (file_1, "add rsp, 8\n");
+                fprintf (file_1, "add rsp, 8 * %d\n", PARAM);
+                PARAM = 1;
                 break;
             }
             case IR_END:
@@ -174,9 +183,5 @@ void WriteNasm (ListIR_t* list)
                 break;
         }
     }
-
-    free (list->list);
-    free (list->data);
-    free (list);
 }
 

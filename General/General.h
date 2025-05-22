@@ -205,9 +205,11 @@ struct ListIR_t
     int size_byte;
 
     const char* name_output_file;
+    uint8_t* asm_code;
+    int size_asm_code;
 };
 
-struct par
+struct pair
 {
     char* str;
     int index;

@@ -212,12 +212,13 @@ void WritingIR (Node_t* node, Tree_t* tree)
                 case F_PRINT_C:
                 {
                     WritingIR (node->right, tree);
-                    fprintf (tree->output, "OUTC\n");
+                    fprintf (tree->output, "CALL_FUNC {OUTC}\n");
                     break;
                 }
                 case F_INPUT:
                 {
                     fprintf (tree->output, "CALL_FUNC {IN}\n");
+                    fprintf (tree->output, "MOV {AX} {stack}\n");
                     fprintf (tree->output, "MOV {stack} {[%d]}\n", node->right->value.var - NUM_FUNC);
                     break;
                 }

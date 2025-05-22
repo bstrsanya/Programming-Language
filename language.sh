@@ -13,7 +13,7 @@ ELF_FILE=my_elf
 
 ./frontend $1 ${TREE_NAME}
 ./back ${TREE_NAME} ${IR_FILE}
-./ir ${IR_FILE} ${ELF_FILE}
+./ir "elf64" ${IR_FILE} ${ELF_FILE}
 # nasm -f elf64 -o asm.o ${NASM_FILE}
 # ld -o elf_asm asm.o
 # ./elf_asm

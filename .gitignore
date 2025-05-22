@@ -10,3 +10,10 @@ Processor
 x
 new_asm.s
 main.c
+lib_compiler
+main
+my_elf
+new_asm
+old_lib
+qw
+nasm

@@ -1,9 +1,10 @@
 main ()
 udos
-    int a = 0;
-    input (a);
-    int c = fact (a);
-    output (c);
+    int num = 0;
+    input (num);
+    int result = fact (num);
+    result = result + 1000;
+    output (result);
 peresda
 
 fact (n)

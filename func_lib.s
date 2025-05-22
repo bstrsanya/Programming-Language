@@ -1,74 +1,122 @@
-jmp IN
-jmp OUT
-jmp HLT
+dq IN   - $ - 4
+dq OUT  - $ + 4
+dq HLT  - $ + 12
+dq OUTC - $ + 20
+dq SQRT - $ + 28
 
 OUT:
-    pop rbx        ; return address
-    pop rax        ; value to print
-    push rbx       ; restore return address
+    push rbp
+    mov rbp, rsp
 
-    sub rsp, 32    ; выделим 32 байта буфера в стеке
-    mov rdi, rsp   ; указатель на конец буфера (вниз по стеку)
+    sub rsp, 40       
+
+    mov rax, [rbp+16]
+
+    mov rdi, rsp 
     mov rbx, rdi
-    add rbx, 20    ; указатель на конец строки (буфера)
-    mov byte [rbx], 10  ; newline
+    add rbx, 31 
+    mov byte [rbx], 10
     dec rbx
 
-.convert_loop:
+.loop:
     xor rdx, rdx
-    mov rcx, 10
-    div rcx
+    mov rax, rcx
+    mov r9, 10
+    div r9
     add dl, '0'
     mov [rbx], dl
     dec rbx
+    mov rcx, rax
     test rax, rax
-    jnz .convert_loop
+    jnz .loop
 
-    inc rbx ; теперь rbx указывает на начало строки
-
-    mov rax, 1      ; syscall write
-    mov rdi, 1      ; stdout
-    mov rsi, rbx    ; строка
+    inc rbx           
+    mov rax, 1 
+    mov rdi, 1 
+    mov rsi, rbx 
     mov rdx, rsp
-    add rdx, 21
-    sub rdx, rbx    ; длина строки
+    add rdx, 32
+    sub rdx, rbx 
     syscall
 
-    add rsp, 32     ; освободим буфер
+    mov rsp, rbp
+    pop rbp
     ret
 
-IN:
-    sub rsp, 16         ; резервируем буфер в стеке
-    mov rsi, rsp        ; rsi указывает на буфер
 
-    mov rax, 0          ; syscall read
-    mov rdi, 0          ; stdin
-    mov rdx, 16         ; читаем до 16 байт
+IN:
+    push rbp
+    mov rbp, rsp
+
+    sub rsp, 32
+    mov rsi, rsp
+    
+    mov rax, 0
+    mov rdi, 0
+    mov rdx, 16
     syscall
 
-    xor rax, rax        ; обнуляем число
-    xor rcx, rcx
+    xor rax, rax
+    xor rcx, rcx    
 
-.parse_loop:
     mov bl, [rsi]
-    cmp bl, 10
-    je .done
+    cmp bl, '-'       
+    jne .parse_digits
+    inc rsi       
+    mov rcx, 1  
+
+    .parse_digits:
+    mov bl, [rsi]
+    cmp bl, 10         
+    je .done_parse
     cmp bl, '0'
-    jl .done
+    jl .done_parse
     cmp bl, '9'
-    jg .done
+    jg .done_parse
 
     sub bl, '0'
+    movzx rbx, bl
     imul rax, rax, 10
     add rax, rbx
-    inc rsi
-    jmp .parse_loop
 
-.done:
-    add rsp, 16         ; очистить буфер
-    pop rbx             ; достаём return address
-    push rax            ; число
-    push rbx            ; вернуть return address
+    inc rsi
+    jmp .parse_digits
+
+    .done_parse:
+    cmp rcx, 0
+    je .finish
+
+    neg rax
+
+    .finish:
+    mov rsp, rbp
+    pop rbp
+    ret
+
+OUTC:
+    push rbp
+    mov rbp, rsp
+    
+    mov rax, 1 
+    mov rdi, 1
+    lea rsi, [rbp + 16]
+    mov rdx, 1
+    syscall
+    
+    mov rsp, rbp
+    pop rbp
+    ret
+
+SQRT:
+    push rbp
+    mov rbp, rsp
+
+    cvtsi2sd xmm0, [rbp + 16]
+    sqrtsd xmm0, xmm0
+    cvttsd2si rax, xmm0
+
+    mov rsp, rbp
+    pop rbp
     ret
 
 HLT:
