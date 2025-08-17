@@ -67,13 +67,13 @@ void CreateDotUSER (Node_t* node, FILE* file_dot, Tree_t* tree)
     }
 }
 
-void PrintDot (Node_t* node, const char* file_input, Tree_t* tree)
+void PrintDot (Tree_t* tree, const char* file_input)
 {
     FILE* file_dot = fopen ("./aaa.dot", "w");
     assert (file_dot != NULL);
     // fprintf (file_dot, "digraph{\nsplines=\"ortho\";\n");
     fprintf (file_dot, "digraph{\n");
-    CreateDotUSER (node, file_dot, tree);
+    CreateDotUSER (tree->expression, file_dot, tree);
     fprintf (file_dot, "}");
     fclose (file_dot);
 

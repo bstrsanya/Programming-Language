@@ -22,23 +22,42 @@ void ListIRCtor (ListIR_t* list_ir, const char* name_file_input, const char* nam
     Node_IR* array = (Node_IR*) calloc (1000, sizeof (Node_IR));
     list_ir->list = array;
 
+    list_ir->buffer_for_label = (char*) calloc (1000, sizeof (char));
+
     uint8_t* b_code = (uint8_t*) calloc (1000, sizeof (uint8_t));
     list_ir->byte = b_code;
 
     list_ir->size_list = 0;
 
-    size_t size = 0;
-    char* init_array = ReadFile (list_ir->input, &size);
-    list_ir->data = init_array;
+    // size_t size = 0;
+    // char* init_array = ReadFile (list_ir->input, &size);
+    // list_ir->data = init_array;
 
     list_ir->name_output_file = name_file_output;
 
-    CopyLib (list_ir, "lib_compiler");
+    system ("nasm -f elf64 -o asm_object.o func_lib.s");
+    system ("ld -o lib_compiler_temp asm_object.o 2>/dev/null");
+    
+    CopyLib (list_ir, "lib_compiler_temp");
 
-    ReadFileIR (list_ir);
+    // ReadFileIR (list_ir);
     fclose (list_ir->input);
 
     list_ir->output = fopen (name_file_output, "wb");
+}
+
+void Dump (ListIR_t* list_ir)
+{
+    for (int i = 0; i < list_ir->size_list; i++)
+    {
+        for (int j = 0; j < NUM_COMMAND_IR; j++)
+        {
+            if (array_command_ir[j].n_com == list_ir->list[i].num)
+            {
+                // printf ("%s\n", array_command_ir[j].name);
+            }
+        }
+    }
 }
 
 void ListIRDtor (ListIR_t* list_ir)
@@ -49,6 +68,7 @@ void ListIRDtor (ListIR_t* list_ir)
     free (list_ir->list);
     free (list_ir->byte);
     free (list_ir->asm_code);
+    free (list_ir->buffer_for_label);
     
     if (list_ir->output)
         fclose (list_ir->output);

@@ -17,3 +17,8 @@ new_asm
 old_lib
 qw
 nasm
+language.sh
+lib_compiler_temp
+quadro.txt
+Back/ 
+Backend/

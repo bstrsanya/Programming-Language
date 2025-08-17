@@ -5,14 +5,18 @@
 
 int main (int argc, const char *argv[])
 {
-    //TODO: check args
+    if (argc != 3) 
+    {
+        fprintf (stderr, "Usage: %s <input_file> <output_file>\n", argv[0]);
+        return 1; 
+    }
+
     Tree_t tree = {};
     TreeCtor (&tree, argv[1], argv[2]);
 
-    PrintDot (tree.expression, "frontend.png", &tree);
+    PrintDot (&tree, FRONTEND_TREE_PNG);
 
     CreateTreeTxt (&tree);
 
     TreeDtor (&tree);
-    return 0;
 }

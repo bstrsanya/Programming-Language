@@ -16,11 +16,6 @@ void ReadDataBase (Tree_t* tree)
     tree->array = CreateArrayTokens ();
     Tokenization (tree, buffer);
 
-    // for (int i = 0; i < 10; i++)
-    // {
-    //     printf ("type: %d; com: %d; number: %.2lf; var: %d.\n", tree->array[i]->type, tree->array[i]->value.com, tree->array[i]->value.number, tree->array[i]->value.var);
-    // }
-
     // recursive descent
     int pointer = 0;
     tree->expression = GetG (&pointer, tree->array);
@@ -46,9 +41,6 @@ Node_t** CreateArrayTokens ()
 
     return array;
 }
-
-int HAS_OPEN_BRACE = 0;
-int I_GLOBAL = 0;
 
 void Tokenization (Tree_t* tree, char* buffer)
 {
@@ -113,6 +105,9 @@ char* CreateStr (char* main_str, int len, Tree_t* tree)
 
 void FindCommand (char* com, TypeCommand_t* com_type, int* com_value, Tree_t* tree)
 {    
+    static int HAS_OPEN_BRACE = 0;
+    static int I_GLOBAL = 0;
+    
     for (int i = 0; i < NUM_COMMAND; i++)
     {
         if (!strcmp (array_command[i].name, com))
@@ -143,7 +138,7 @@ void FindCommand (char* com, TypeCommand_t* com_type, int* com_value, Tree_t* tr
                 {
                     I_GLOBAL = j;
                     // printf ("I_GLOBAL = %d\n", I_GLOBAL);
-                    tree->table_var[j] = "-----NEWFUNC-----";
+                    tree->table_var[j] = (char*) "-----NEWFUNC-----";
                     I_GLOBAL++;
                     break;
                 }

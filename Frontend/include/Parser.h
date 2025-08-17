@@ -45,4 +45,6 @@ void PrintTxt (Node_t* node, Tree_t* tree);
 
 char* CreateStr (char* main_str, int len, Tree_t* tree);
 
-#endif
+const char FRONTEND_TREE_PNG[] = "frontend.png"; 
+
+#endif // PARSER_H

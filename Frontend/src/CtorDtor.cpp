@@ -43,9 +43,11 @@ void TreeCtor (Tree_t* tree, const char* name_file_input, const char* name_file_
     printf ("I'm frontend! Open file [%s] for read and [%s] for writing\n", name_file_input, name_file_output);
 
     tree->input = fopen (name_file_input, "rb");
+    // perror ();
 
     char** table = (char**) calloc (SIZE_TABLE_VAR, sizeof (char*));
     assert (table);
+    
     for (int i = 0; i < SIZE_TABLE_VAR; i++)
         table[i] = NULL;
 

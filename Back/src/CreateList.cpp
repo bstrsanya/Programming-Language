@@ -13,8 +13,12 @@ void CreateIR (Tree_t* tree)
     assert (tree->output);
     assert (tree->expression);
 
-    fprintf (tree->output, "START\n");
-    fprintf (tree->output, "CALL_FUNC {main}\nCALL_FUNC {HLT}\n");
+    Node_IR* array = (Node_IR*) calloc (1000, sizeof (Node_IR));
+    array[0].num = IR_START;
+    array[1].num = IR_CALL_FUNC;
+    array[1].arg1.num_str = "main"; 
+    // fprintf (tree->output, "START\n");
+    // fprintf (tree->output, "CALL_FUNC {main}\nCALL_FUNC {HLT}\n");
     WritingIR (tree->expression, tree);
     fprintf (tree->output, "END\n");
 }

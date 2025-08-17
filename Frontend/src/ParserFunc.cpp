@@ -8,11 +8,11 @@
 #define SHIFT_CUR (*pointer)++;
 #define VAL_COM_CUR array[*pointer]->value.com
 
-#define CHECK(val) \
-    if (VAL_COM_CUR != val) \
-    {\
+#define CHECK(val)                                                                    \
+    if (VAL_COM_CUR != val)                                                           \
+    {                                                                                 \
         printf ("need [%s] instead of [%s]\n", FindStr (val), FindStr (VAL_COM_CUR)); \
-        exit (0); \
+        exit (0);                                                                     \
     }
 
 const char* FindStr (ListCommand_t value)
@@ -21,11 +21,11 @@ const char* FindStr (ListCommand_t value)
     while (i < NUM_COMMAND)
     {
         if (value == array_command[i].n_com)
-        {
             return array_command[i].name;
-        }
+
         i++;
     }
+
     return array_command[0].name;        
 }
 
@@ -33,12 +33,15 @@ Node_t* GetG (int* pointer, Node_t** array)
 {
     Node_t* main_node = NodeCtor (BLOCK, 0, NULL, NULL);
     GetProgram (pointer, array, main_node);
+
     if ((int) array[*pointer]->value.var != '$')
     {
         printf ("[%d]\n", *pointer);
         assert (0);
     }
+    
     SHIFT_CUR
+
     return main_node;
 }
 
@@ -67,6 +70,7 @@ Node_t* GetDefinitionFunc (int* pointer, Node_t** array)
         SHIFT_CUR              // udos
         GetStr (pointer, array, value);
     }
+    
     return value;
 }
 

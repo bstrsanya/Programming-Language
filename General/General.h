@@ -130,7 +130,7 @@ constexpr Command_t array_command[] =
 const int NUM_COMMAND = sizeof (array_command) / sizeof (array_command[0]);
 
 void CreateDotUSER (Node_t* node, FILE* file_dot, Tree_t* tree);
-void PrintDot (Node_t* node, const char* file_input, Tree_t* tree);
+void PrintDot (Tree_t* tree, const char* file_input);
 
 enum Name
 {
@@ -207,6 +207,8 @@ struct ListIR_t
     const char* name_output_file;
     uint8_t* asm_code;
     int size_asm_code;
+    char* buffer_for_label;
+    int pointer_label;
 };
 
 struct pair

@@ -20,8 +20,8 @@ all: dir IRBackend
 dir:
 	mkdir -p ./IRBackend/obj
 
-IRBackend: ./IRBackend/obj/main.o ./IRBackend/obj/ReadFile.o ./IRBackend/obj/SizeFile.o ./IRBackend/obj/CreateNasm.o ./IRBackend/obj/CreateElf.o ./IRBackend/obj/ReadIR.o
-	g++ ./IRBackend/obj/main.o ./IRBackend/obj/ReadFile.o ./IRBackend/obj/SizeFile.o ./IRBackend/obj/CreateNasm.o ./IRBackend/obj/CreateElf.o ./IRBackend/obj/ReadIR.o ${FLAGS} -o ir
+IRBackend: ./IRBackend/obj/main.o ./IRBackend/obj/ReadFile.o ./IRBackend/obj/SizeFile.o ./IRBackend/obj/CreateNasm.o ./IRBackend/obj/CreateElf.o ./IRBackend/obj/ReadIR.o ./IRBackend/obj/CreateList.o ./IRBackend/obj/Recovery.o
+	g++ ./IRBackend/obj/main.o ./IRBackend/obj/ReadFile.o ./IRBackend/obj/SizeFile.o ./IRBackend/obj/CreateNasm.o ./IRBackend/obj/CreateElf.o ./IRBackend/obj/ReadIR.o ./IRBackend/obj/CreateList.o ./IRBackend/obj/Recovery.o ${FLAGS} -o ir
 
 ./IRBackend/obj/main.o: ./IRBackend/main.cpp
 	$(CC) $(II) $(FLAGS) -c ./IRBackend/main.cpp -o ./IRBackend/obj/main.o
@@ -41,5 +41,10 @@ IRBackend: ./IRBackend/obj/main.o ./IRBackend/obj/ReadFile.o ./IRBackend/obj/Siz
 ./IRBackend/obj/ReadIR.o: ./IRBackend/src/ReadIR.cpp
 	$(CC) $(II) $(FLAGS) -c ./IRBackend/src/ReadIR.cpp -o ./IRBackend/obj/ReadIR.o
 
+./IRBackend/obj/Recovery.o: ./IRBackend/src/Recovery.cpp
+	$(CC) $(II) $(FLAGS) -c ./IRBackend/src/Recovery.cpp -o ./IRBackend/obj/Recovery.o
+	
+./IRBackend/obj/CreateList.o: ./IRBackend/src/CreateList.cpp
+	$(CC) $(II) $(FLAGS) -c ./IRBackend/src/CreateList.cpp -o ./IRBackend/obj/CreateList.o
 clean:
 	rm -rf ./IRBackend/obj/*.o ir

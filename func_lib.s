@@ -8,35 +8,27 @@ OUT:
     push rbp
     mov rbp, rsp
 
-    sub rsp, 40       
-
     mov rax, [rbp+16]
 
-    mov rdi, rsp 
-    mov rbx, rdi
-    add rbx, 31 
-    mov byte [rbx], 10
-    dec rbx
+    mov rcx, 1
+    dec rsp
+    mov byte [rsp], 10
+    mov rbx, 10
 
-.loop:
+.get_digit:
     xor rdx, rdx
-    mov rax, rcx
-    mov r9, 10
-    div r9
-    add dl, '0'
-    mov [rbx], dl
-    dec rbx
-    mov rcx, rax
-    test rax, rax
-    jnz .loop
+    div rbx             ; rax/10, остаток в rdx
+    add dl, '0'         ; цифра ASCII
+    dec rsp
+    mov [rsp], dl       ; кладём на стек 1 байт
+    inc rcx
+    cmp rax, 0
+    jg .get_digit
 
-    inc rbx           
-    mov rax, 1 
-    mov rdi, 1 
-    mov rsi, rbx 
-    mov rdx, rsp
-    add rdx, 32
-    sub rdx, rbx 
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, rsp
+    mov rdx, rcx
     syscall
 
     mov rsp, rbp

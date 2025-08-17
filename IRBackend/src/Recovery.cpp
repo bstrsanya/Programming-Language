@@ -5,7 +5,8 @@
 #include <math.h>
 #include <ctype.h>
 
-#include "Recovery_IR.h"
+#include "Elf64.h"
+#include "header-IR.h"
 
 void TreeCtor (Tree_t* tree, const char* name_file_input, const char* name_file_output)
 {
@@ -13,21 +14,12 @@ void TreeCtor (Tree_t* tree, const char* name_file_input, const char* name_file_
     assert (name_file_input);
     assert (name_file_output);
 
-    printf ("I'm backend! Open file [%s] for read and [%s] for writing\n", 
-                                       name_file_input, name_file_output);
+    printf ("I'm backend! Open file [%s] for read and [%s] for writing\n", name_file_input, name_file_output);
 
-    // -----Processing file-----
-    FILE* file_input = fopen (name_file_input, "rb");
-
-    if (!file_input)
-        perror ("Error open file");
-
-    tree->input = file_input;
-    // -------------------------
+    tree->input = fopen (name_file_input, "rb");
 
     char** table = (char**) calloc (SIZE_TABLE_VAR, sizeof (char*));
     assert (table);
-
     for (int i = 0; i < SIZE_TABLE_VAR; i++)
         table[i] = NULL;
 
@@ -36,14 +28,7 @@ void TreeCtor (Tree_t* tree, const char* name_file_input, const char* name_file_
     ReadDataBase (tree);
     fclose (tree->input);
 
-    // -----Processing file-----
-    FILE* file_output = fopen (name_file_output, "wb");
-
-    if (!file_output)
-        perror ("Error open file");
-
-    tree->output = file_output;
-    // -------------------------
+    tree->output = fopen (name_file_output, "wb");
 }
 
 Node_t* NodeCtor (int type, double value, Node_t* left, Node_t* right)

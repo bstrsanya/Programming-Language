@@ -11,9 +11,9 @@ ELF_FILE=my_elf
 # ./Processor/asm ${ASM_FILE} ${BIN_FILE}
 # ./Processor/pro ${BIN_FILE}
 
-./frontend $1 ${TREE_NAME}
-./back ${TREE_NAME} ${IR_FILE}
-./ir "elf64" ${IR_FILE} ${ELF_FILE}
+# ./frontend $1 ${TREE_NAME}
+# ./back ${TREE_NAME} ${IR_FILE}
+# ./ir "elf64" ${TREE_NAME} ${IR_FILE} ${ELF_FILE}
 # nasm -f elf64 -o asm.o ${NASM_FILE}
 # ld -o elf_asm asm.o
 # ./elf_asm

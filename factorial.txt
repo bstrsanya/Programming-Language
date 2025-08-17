@@ -3,7 +3,6 @@ udos
     int num = 0;
     input (num);
     int result = fact (num);
-    result = result + 1000;
     output (result);
 peresda
 

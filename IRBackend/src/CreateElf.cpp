@@ -6,6 +6,8 @@
 #include <ctype.h>
 #include <stdint.h>
 
+#include <elf.h>
+
 #include "header-IR.h"
 #include "Elf64.h"
 
@@ -189,17 +191,17 @@ void WriteElf (ListIR_t* list)
 
     Elf64Header header = 
     {
-        .EI_MAG0       = 0x7f,                      // magic num
-        .EI_MAG3       = {'E', 'L', 'F'},           // 'E' 'L' 'F'
-        .EI_CLASS      = 2,                         // 64-bit format
-        .EI_DATA       = 1,                         // little endian
-        .EI_VERSION    = 1,                         // version of ELF
-        .EI_OSABI      = 0,                         // system V
-        .EI_ABIVERSION = 0,                         // ignored
-        .EI_PAD        = {0,0,0,0,0,0,0},           // reserved
-        .e_type        = 2,                         // file type
-        .e_machine     = 0x3E,                      // instruction set architecture
-        .e_version     = 1,                         // original version
+        .ei_MAG0       = ELFMAG0,                      // magic num
+        .ei_MAG3       = {ELFMAG1, ELFMAG2, ELFMAG3},  // 'E' 'L' 'F'
+        .ei_CLASS      = ELFCLASS64,                // 64-bit format
+        .ei_DATA       = ELFDATA2LSB,               // little endian
+        .ei_VERSION    = EV_CURRENT,                // version of ELF
+        .ei_OSABI      = ELFOSABI_SYSV,             // system V
+        .ei_ABIVERSION = 0,                         // ignored
+        .ei_PAD        = {0,0,0,0,0,0,0},           // reserved
+        .e_type        = ET_EXEC,                   // file type
+        .e_machine     = EM_X86_64,                 // instruction set architecture
+        .e_version     = EV_CURRENT,                // original version
         .e_entry       = 0x400000 + headersSize,     /* PROVIDE (__executable_start = SEGMENT_START("text-segment", 0x400000)); 
                                                         . = SEGMENT_START("text-segment", 0x400000) + SIZEOF_HEADERS; */
         .e_phoff       = sizeof (Elf64Header),      // point start program header table
@@ -210,13 +212,13 @@ void WriteElf (ListIR_t* list)
         .e_phnum       = 1,                         // num program header table 
         .e_shentsize   = 0,                         // size section header table
         .e_shnum       = 0,                         // num section header table
-        .e_shstrndx    = 0                          // index section header table
+        .e_shstrndx    = SHN_UNDEF                  // index section header table
     };
 
     Elf64_PhtEntry phtEntry = 
     {
-        .p_type   = 1,                              // 1: PT_LOAD
-        .p_flags  = 0x7,                            // 0: execute, 1: write, 2: read
+        .p_type   = PT_LOAD,                        // 1: PT_LOAD
+        .p_flags  = PF_R |PF_W | PF_X,              // 0: execute, 1: write, 2: read
         .p_offset = headersSize,
         .p_vaddr  = 0x400000 + headersSize,         // linux 
         .p_paddr  = 0x400000 + headersSize,
@@ -250,14 +252,15 @@ void CopyLib (ListIR_t* list, const char* name_file)
         size_code |= array[ADDR_BEGIN_SIZE_CODE + (3 - i)];
     }
 
+    unsigned begin_text = 0;
+    begin_text |= array[0x19];
+    begin_text <<= 8;
+    begin_text |= array[0x18];
 
-    uint8_t* asm_code = (uint8_t*) calloc (size_code - 0x1000, sizeof (uint8_t));
-    int size_asm_code = 0;
-    for (int i = 0x1000; i < size_code; i++)
-    {
-        asm_code[i - 0x1000] = array[i];
-        size_asm_code++;
-    }
+    uint8_t* asm_code = (uint8_t*) calloc (size_code - begin_text, sizeof (uint8_t));
+    int size_asm_code = size_code - begin_text;
+
+    memcpy (asm_code, array + begin_text, size_asm_code);
 
     free (array);
     

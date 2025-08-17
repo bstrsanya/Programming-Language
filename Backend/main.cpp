@@ -9,7 +9,7 @@ int main (int argc, const char *argv[])
     Tree_t tree = {};
     TreeCtor (&tree, argv[1], argv[2]);
 
-    PrintDot (tree.expression, "backend.png", &tree);
+    PrintDot (&tree, "backend.png");
 
     CreateAsmFile (&tree);
 
